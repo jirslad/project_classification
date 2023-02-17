@@ -9,15 +9,15 @@ def main():
                                 transform=transforms.ToTensor(),
                                 download=True)
 
-    val_dataset = datasets.DTD(root=datasets_path,
-                            split="val",
-                            transform=transforms.ToTensor(),
-                            download=True)
+    # val_dataset = datasets.DTD(root=datasets_path,
+    #                         split="val",
+    #                         transform=transforms.ToTensor(),
+    #                         download=True)
 
-    test_dataset = datasets.DTD(root=datasets_path,
-                                split="test",
-                                transform=transforms.ToTensor(),
-                                download=True)
+    # test_dataset = datasets.DTD(root=datasets_path,
+    #                             split="test",
+    #                             transform=transforms.ToTensor(),
+    #                             download=True)
 
 if __name__ == "__main__":
     main()
