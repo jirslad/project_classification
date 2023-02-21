@@ -37,8 +37,7 @@ def DTD():
 
     # # read class names
     # with open(dtd_path / "class_names.txt") as f:
-    #     classes = f.read()
-    # classes_list = classes.split(" ")
+    #     class_names = f.read().split(" ")
 
     # find annotations (image paths and labels)
     img_paths = []
