@@ -1,3 +1,4 @@
 datasets/
 yolov5/
 literature/
+__pycache__/
