@@ -48,6 +48,9 @@ def DTD():
         annotations = text.split(" \n")
     for anno in annotations:
         path, *label_names = anno.split(" ")
+        if len(label_names) == 0:
+            print("Invalid row detected and ignored.")
+            continue
         img_paths.append(imgs_folder_path / path)
         # label_idxs = []
         # for label_name in label_names:
