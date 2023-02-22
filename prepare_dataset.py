@@ -1,3 +1,4 @@
+import argparse
 from torchvision import datasets
 from pathlib import Path
 import os
@@ -72,6 +73,16 @@ def DTD():
     print("DTD dataset processed successfully.")
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dataset", choices=["DTD"])
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    DTD()
+    args = parse_args()
+
+    if args.dataset == "DTD":
+        DTD()
 
