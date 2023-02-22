@@ -1,20 +1,22 @@
 import torch
 from torch.utils.data import Dataset, DataLoader, random_split
-from torchvision import transforms, io
+from torchvision import transforms
+from PIL import Image
 import os
 from typing import List, Tuple
 from pathlib import Path
 import csv
 
 SEED = 42
-NUM_WORKERS = os.cpu_count()
+NUM_WORKERS = 0 #os.cpu_count()
 
 
 def create_dataloaders(dataset_dir: str,
     split_ratio: List,
     transform: transforms.Compose,
     batch_size: int,
-    num_workers: int=NUM_WORKERS
+    num_workers: int=NUM_WORKERS,
+    seed=SEED
 ):
     """Creates train, val and test dataloaders from random split of DTD dataset."""
 
@@ -62,15 +64,15 @@ class DTDDataset(Dataset):
     
     def __getitem__(self, idx) -> Tuple[torch.Tensor, torch.Tensor]:
         img_path, labels = self.annotations[idx]
-        img = io.read_image(img_path)
+        img = Image.open(img_path)
         if self.transform:
             img = self.transform(img)
         return img, labels
 
     def _str2multihot(self, label, num_classes):
         class_idxs = label.split(",")
-        label_vector = torch.zeros(num_classes, dtype=torch.int32)
+        label_vector = torch.zeros(num_classes, dtype=torch.float32)
         for idx in class_idxs:
-            label_vector[int(idx)] = 1
+            label_vector[int(idx)] = 1.
         return label_vector
 
