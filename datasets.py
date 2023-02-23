@@ -56,7 +56,6 @@ class DTDDataset(Dataset):
         self.num_classes = len(self.class_names)
         self.transform = transform
 
-        
         # parse labels in annotations 
         for anno in self.annotations:
             if multilabel:
