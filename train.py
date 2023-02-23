@@ -4,6 +4,8 @@ from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 import os
 from pathlib import Path
+import argparse
+from typing import List
 
 import datasets
 from models import TinyVGG
@@ -18,9 +20,10 @@ print(f"Training on {device}.")
 ### ARGUMENTS
 multilabel = False
 
-def main():
+def main(args):
 
     ### TRANSFORM
+    # TODO: add cropping to square
     transform = transforms.Compose([
         transforms.Resize((64,64)),
         transforms.ToTensor()
@@ -28,8 +31,8 @@ def main():
 
     ### DATASET ###
     dataset_path = Path("datasets/dtd/dtd")
-    split_ratio = [0.6, 0.2, 0.2]
-    BATCH_SIZE = 32
+    split_ratio = args.split_ratio
+    BATCH_SIZE = args.batch
 
     train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
         dataset_dir=dataset_path,
@@ -58,19 +61,38 @@ def main():
     summary(model_0, input_size=[1, 3, 64, 64])
 
     ### TRAINING ###
-    EPOCHS = 5
+    EPOCHS = args.epochs
     accuracy_fn = multilabel_accuracy
     if multilabel:
         loss_fn = torch.nn.BCEWithLogitsLoss()
     else:
         loss_fn = torch.nn.CrossEntropyLoss()
     optim = torch.optim.Adam(params=model_0.parameters(),
-                            lr=0.01)
+                            lr=args.lr)
     train(model_0, train_dataloader, val_dataloader, loss_fn, optim,
         EPOCHS, device, accuracy_fn)
 
 
+def parse_args(arguments):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs", type=int, default=100)
+    parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
+    parser.add_argument("--batch", type=int, default=32)
+    parser.add_argument("--split-ratio", type=List, default=[0.6, 0.2, 0.2], help='List of ratios of train, val, test dataset split (e.g. [0.6, 0.2, 0.2])')
+    return parser.parse_args(arguments)
+
+# arguments for debugging
+arguments = [
+    '--epochs', '5',
+    '--lr', '0.001',
+    '--batch', '32',
+    '--split-ratio', '[0.01, 0.01, 0.98]'
+]
+
 if __name__ == "__main__":
-    main()
+    
+    args = parse_args(arguments)
+    main(args)
+
 
 aa = 1
