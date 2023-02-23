@@ -73,25 +73,25 @@ def main(args):
         EPOCHS, device, accuracy_fn)
 
 
-def parse_args(arguments):
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--split-ratio", nargs=3, type=float, help='List of ratios of train, val, test dataset split (e.g. [0.6, 0.2, 0.2])')
-    return parser.parse_args(arguments)
+    return parser.parse_args()
 
 # arguments for debugging
-arguments = [
-    '--epochs', '5',
-    '--lr', '0.001',
-    '--batch', '32',
-    '--split-ratio', '0.01', '0.01', '0.98'
-]
+# arguments = [
+#     '--epochs', '5',
+#     '--lr', '0.001',
+#     '--batch', '32',
+#     '--split-ratio', '0.01', '0.01', '0.98'
+# ]
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    args = parse_args(arguments)
+    args = parse_args()
     main(args)
 
 
