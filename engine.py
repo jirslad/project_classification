@@ -74,7 +74,7 @@ def train(model: torch.nn.Module,
     }
 
 
-    for epoch in tqdm(range(epochs)):
+    for epoch in range(epochs):
         train_loss, train_acc = train_step(model, train_dataloader, loss_fn,
             optimizer, device, accuracy_fn)
         val_loss, val_acc = val_step(model, val_dataloader, loss_fn, device, accuracy_fn)
