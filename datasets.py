@@ -12,6 +12,7 @@ NUM_WORKERS = 0 #os.cpu_count()
 
 
 def create_dataloaders(dataset_dir: str,
+    multilabel: bool,
     split_ratio: List,
     transform: transforms.Compose,
     batch_size: int,
@@ -20,7 +21,7 @@ def create_dataloaders(dataset_dir: str,
 ):
     """Creates train, val and test dataloaders from random split of DTD dataset."""
 
-    dataset = DTDDataset(Path(dataset_dir), transform)
+    dataset = DTDDataset(Path(dataset_dir), transform, multilabel)
 
     train_dataset, val_dataset, test_dataset = random_split(
         dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
@@ -40,8 +41,8 @@ def create_dataloaders(dataset_dir: str,
 
 
 class DTDDataset(Dataset):
-    """DTD dataset"""
-    def __init__(self, dataset_path: Path, transform: transforms.Compose=None):
+    """DTD dataset for single-label or multi-label multi-class classification"""
+    def __init__(self, dataset_path: Path, transform: transforms.Compose=None, multilabel=False):
 
         with open(dataset_path / "class_names.txt") as f:
             self.class_names = f.read().split(" ")
@@ -55,9 +56,17 @@ class DTDDataset(Dataset):
         self.num_classes = len(self.class_names)
         self.transform = transform
 
-        # parse labels in annotations to multi-hot tensor
+        
+        # parse labels in annotations 
         for anno in self.annotations:
-            anno[1] = self._str2multihot(anno[1], self.num_classes)
+            if multilabel:
+                # to multi-hot (torch.Tensor)
+                anno[1] = self._str2multihot(anno[1], self.num_classes)
+            else:
+                # to single class index (int)
+                anno[1] = self.class_names.index(Path(anno[0]).parent.stem)
+        
+
 
     def __len__(self):
         return len(self.annotations)
@@ -75,4 +84,3 @@ class DTDDataset(Dataset):
         for idx in class_idxs:
             label_vector[int(idx)] = 1.
         return label_vector
-
