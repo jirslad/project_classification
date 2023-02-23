@@ -89,7 +89,7 @@ def parse_args():
 #     '--split-ratio', '0.01', '0.01', '0.98'
 # ]
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     
     args = parse_args()
     main(args)
