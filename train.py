@@ -15,6 +15,9 @@ NUM_WORKERS = os.cpu_count()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Training on {device}.")
 
+### ARGUMENTS
+multilabel = False
+
 def main():
 
     ### TRANSFORM
@@ -30,6 +33,7 @@ def main():
 
     train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
         dataset_dir=dataset_path,
+        multilabel=multilabel,
         split_ratio=split_ratio,
         transform=transform,
         batch_size=BATCH_SIZE,
@@ -56,9 +60,12 @@ def main():
     ### TRAINING ###
     EPOCHS = 5
     accuracy_fn = multilabel_accuracy
-    loss_fn = torch.nn.BCEWithLogitsLoss()
+    if multilabel:
+        loss_fn = torch.nn.BCEWithLogitsLoss()
+    else:
+        loss_fn = torch.nn.CrossEntropyLoss()
     optim = torch.optim.Adam(params=model_0.parameters(),
-                            lr=0.001)
+                            lr=0.01)
     train(model_0, train_dataloader, val_dataloader, loss_fn, optim,
         EPOCHS, device, accuracy_fn)
 
