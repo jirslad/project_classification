@@ -78,7 +78,7 @@ def parse_args(arguments):
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
-    parser.add_argument("--split-ratio", type=List, default=[0.6, 0.2, 0.2], help='List of ratios of train, val, test dataset split (e.g. [0.6, 0.2, 0.2])')
+    parser.add_argument("--split-ratio", nargs=3, type=float, help='List of ratios of train, val, test dataset split (e.g. [0.6, 0.2, 0.2])')
     return parser.parse_args(arguments)
 
 # arguments for debugging
@@ -86,7 +86,7 @@ arguments = [
     '--epochs', '5',
     '--lr', '0.001',
     '--batch', '32',
-    '--split-ratio', '[0.01, 0.01, 0.98]'
+    '--split-ratio', '0.01', '0.01', '0.98'
 ]
 
 if __name__ == "__main__":
