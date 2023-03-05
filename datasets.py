@@ -12,10 +12,10 @@ NUM_WORKERS = 0 #os.cpu_count()
 
 
 def create_dataloaders(dataset_dir: str,
-    multilabel: bool,
     split_ratio: List,
     transform: transforms.Compose,
     batch_size: int,
+    multilabel: bool=False,
     num_workers: int=NUM_WORKERS,
     seed=SEED
 ):
