@@ -32,6 +32,7 @@ def main(args):
 
     ### DATASET ###
     dataset_path = Path("datasets/dtd/dtd")
+    dataset_path = Path("datasets/food-101")
     split_ratio = args.split_ratio
     BATCH_SIZE = args.batch
 
