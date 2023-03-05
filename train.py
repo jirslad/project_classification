@@ -25,7 +25,7 @@ def main(args):
     ### TRANSFORM
     # TODO: add cropping to square
     transform = transforms.Compose([
-        transforms.Resize((64,64)),
+        transforms.Resize((128,128)),
         transforms.ToTensor()
     ])
 
@@ -36,9 +36,9 @@ def main(args):
 
     train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
         dataset_dir=dataset_path,
-        multilabel=multilabel,
         split_ratio=split_ratio,
         transform=transform,
+        multilabel=multilabel,
         batch_size=BATCH_SIZE,
         num_workers=NUM_WORKERS,
         seed=SEED
@@ -47,7 +47,7 @@ def main(args):
     class_names = train_dataloader.dataset.dataset.class_names
 
     print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
-        f"{len(class_names)} classes., batch size is {BATCH_SIZE}. \n" \
+        f"{len(class_names)} classes, batch size is {BATCH_SIZE}. \n" \
         f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
         f"validation batches and {len(test_dataloader)} testing batches."
     )
