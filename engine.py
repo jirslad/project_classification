@@ -81,7 +81,7 @@ def train(model: torch.nn.Module,
 
         if epoch == 0:
             print(f"Epoch | Train loss | Val loss | Train acc | Val acc")
-        print(f"{epoch:^5} | {train_loss:.8f} | {val_loss:.6f} | {train_acc:.6f} | {val_acc:.4f}")
+        print(f"{epoch:^5} |   {train_loss:.4f}   |  {val_loss:.4f}  |   {train_acc:.3f}   | {val_acc:.3f} ")
 
         results["train_loss"].append(train_loss)
         results["val_loss"].append(val_loss)
