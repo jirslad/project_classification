@@ -53,7 +53,7 @@ class DTDDataset(Dataset):
     def __init__(self, dataset_path: Path, transform: transforms.Compose=None, multilabel=False):
 
         with open(dataset_path / "class_names.txt") as f:
-            self.class_names = f.read().split(" ")
+            self.classes = f.read().split(" ")
 
         with open(dataset_path / "annotations.csv") as f:
             reader = csv.reader(f, delimiter="\t")
@@ -61,7 +61,7 @@ class DTDDataset(Dataset):
             for row in reader:
                 self.annotations.append(row)
 
-        self.num_classes = len(self.class_names)
+        self.num_classes = len(self.classes)
         self.transform = transform
 
         # parse labels in annotations 
@@ -71,7 +71,7 @@ class DTDDataset(Dataset):
                 anno[1] = self._str2multihot(anno[1], self.num_classes)
             else:
                 # to single class index (int)
-                anno[1] = self.class_names.index(Path(anno[0]).parent.stem)
+                anno[1] = self.classes.index(Path(anno[0]).parent.stem)
         
     def __len__(self):
         return len(self.annotations)

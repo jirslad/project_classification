@@ -46,10 +46,10 @@ def main(args):
         seed=SEED
     )
 
-    class_names = train_dataloader.dataset.dataset.class_names
+    classes = train_dataloader.dataset.dataset.classes
 
     print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
-        f"{len(class_names)} classes, batch size is {BATCH_SIZE}. \n" \
+        f"{len(classes)} classes, batch size is {BATCH_SIZE}. \n" \
         f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
         f"validation batches and {len(test_dataloader)} testing batches."
     )
@@ -58,7 +58,7 @@ def main(args):
     torch.manual_seed(SEED)
     model_0 = TinyVGG(input_channels=3,
                     hidden_channels=10,
-                    output_classes=len(class_names)).to(device)
+                    output_classes=len(classes)).to(device)
 
     summary(model_0, input_size=[1, 3, img_size, img_size])
 
