@@ -10,7 +10,7 @@ datasets_path = Path("datasets")
 def DTD():
     '''Prepares DTD dataset.    
     
-    Downloads DTD dataset (sources bellow). Creates 'class_names.txt' with ordered class names.
+    Downloads DTD dataset (sources below). Creates 'class_names.txt' with ordered class names.
     Also creates 'annotations.csv' with image paths and image labels separated by tab, one
     image per line. Image paths are strings of class indexes separated by comma (e.g. '0,13,39').
     
@@ -72,10 +72,21 @@ def DTD():
     
     print("DTD dataset processed successfully.")
 
+def Food101():
+    '''Prepares Food101 dataset.
+    
+    Downloads Food101 dataset (sources below) with default torchvision class.
+
+    https://data.vision.ee.ethz.ch/cvl/food-101.tar.gz
+    https://pytorch.org/vision/main/generated/torchvision.datasets.Food101.html
+    '''
+    datasets.Food101(root=datasets_path, download=True)
+
+    print("Food101 dataset processed successfully.")
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataset", choices=["DTD"])
+    parser.add_argument("-d", "--dataset", choices=["DTD", "Food101"])
 
     return parser.parse_args()
 
@@ -86,3 +97,5 @@ if __name__ == "__main__":
     if args.dataset == "DTD":
         DTD()
 
+    if args.dataset == "Food101":
+        Food101()
