@@ -19,13 +19,14 @@ print(f"Training on {device}.")
 
 ### ARGUMENTS
 multilabel = False
+img_size = 128
 
 def main(args):
 
     ### TRANSFORM
     # TODO: add cropping to square
     transform = transforms.Compose([
-        transforms.Resize((128,128)),
+        transforms.Resize((img_size,img_size)),
         transforms.ToTensor()
     ])
 
@@ -58,7 +59,7 @@ def main(args):
                     hidden_channels=10,
                     output_classes=len(class_names)).to(device)
 
-    summary(model_0, input_size=[1, 3, 64, 64])
+    summary(model_0, input_size=[1, 3, img_size, img_size])
 
     ### TRAINING ###
     EPOCHS = args.epochs
