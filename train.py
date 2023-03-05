@@ -19,7 +19,7 @@ print(f"Training on {device}.")
 
 ### ARGUMENTS
 multilabel = False
-img_size = 128
+img_size = 64
 
 def main(args):
 

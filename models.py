@@ -23,7 +23,7 @@ class TinyVGG(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(hidden_channels * 29 * 29, output_classes)
+            nn.Linear(hidden_channels * 13 * 13, output_classes) # 64->13, 128->29
         )
 
     def forward(self, x):
