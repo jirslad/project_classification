@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset, DataLoader, random_split
-from torchvision import transforms
+from torchvision import datasets, transforms
 from PIL import Image
 import os
 from typing import List, Tuple
@@ -21,7 +21,15 @@ def create_dataloaders(dataset_dir: str,
 ):
     """Creates train, val and test dataloaders from random split of DTD dataset."""
 
-    dataset = DTDDataset(Path(dataset_dir), transform, multilabel)
+    if dataset_dir.name == "dtd":
+        dataset = DTDDataset(Path(dataset_dir), transform, multilabel)
+    if dataset_dir.name == "food-101": # TODO: use test split for testing
+        dataset = datasets.Food101(root=Path(dataset_dir).parent,
+                                   split="train",
+                                   transform=transform,
+                                   download=False)
+    else:
+        print("Wrong dataset path, dataset does not exist.")
 
     train_dataset, val_dataset, test_dataset = random_split(
         dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
@@ -65,8 +73,6 @@ class DTDDataset(Dataset):
                 # to single class index (int)
                 anno[1] = self.class_names.index(Path(anno[0]).parent.stem)
         
-
-
     def __len__(self):
         return len(self.annotations)
     
