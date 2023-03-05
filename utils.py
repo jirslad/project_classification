@@ -1,3 +1,4 @@
+import torch
 
 ### ACCURACY FUNCTIONS ###
 
@@ -7,8 +8,10 @@
 # or use TorchMetrics https://torchmetrics.readthedocs.io/en/stable/classification/accuracy.html#multilabel-accuracy
 
 
-def multiclass_accuracy():
-    pass
+def multiclass_accuracy(y, y_class_idxs):
+    '''Returns accuracy in range [0, 1]'''
+    return (y == y_class_idxs).sum().item() / len(y)
 
 def multilabel_accuracy(y, y_logits):
-    return 0.0
+    return 999.99
+

@@ -10,7 +10,7 @@ from typing import List
 import datasets
 from models import TinyVGG
 from engine import train
-from utils import multilabel_accuracy
+from utils import multiclass_accuracy, multilabel_accuracy
 
 SEED = 42
 NUM_WORKERS = os.cpu_count()
@@ -64,7 +64,7 @@ def main(args):
 
     ### TRAINING ###
     EPOCHS = args.epochs
-    accuracy_fn = multilabel_accuracy
+    accuracy_fn = multiclass_accuracy
     if multilabel:
         loss_fn = torch.nn.BCEWithLogitsLoss()
     else:

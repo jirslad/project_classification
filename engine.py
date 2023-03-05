@@ -17,7 +17,8 @@ def train_step(model, dataloader, loss_fn, optim, device, accuracy_fn):
         optim.zero_grad()
         loss.backward()
         optim.step()
-        train_acc += accuracy_fn(y, y_logits)
+        y_class_idxs = torch.argmax(torch.softmax(y_logits, dim=1), dim=1)
+        train_acc += accuracy_fn(y, y_class_idxs)
     
     train_loss /= len(dataloader)
     train_acc /= len(dataloader)
@@ -36,7 +37,8 @@ def val_step(model, dataloader, loss_fn, device, accuracy_fn):
             y_logits = model(X)
             loss = loss_fn(y_logits, y)
             val_loss += loss.item()
-            val_acc += accuracy_fn(y, y_logits)
+            y_class_idxs = torch.argmax(torch.softmax(y_logits, dim=1), dim=1)
+            val_acc += accuracy_fn(y, y_class_idxs)
     
     val_loss /= len(dataloader)
     val_acc /= len(dataloader)
