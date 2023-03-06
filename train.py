@@ -10,7 +10,7 @@ from typing import List
 import datasets
 from models import TinyVGG
 from engine import train
-from utils import multiclass_accuracy, multilabel_accuracy
+from utils import multiclass_accuracy, multilabel_accuracy, save_model
 
 SEED = 42
 NUM_WORKERS = os.cpu_count()
@@ -32,7 +32,7 @@ def main(args):
 
     ### DATASET ###
     dataset_path = Path("datasets/dtd/dtd")
-    dataset_path = Path("datasets/food-101")
+    # dataset_path = Path("datasets/food-101")
     split_ratio = args.split_ratio
     BATCH_SIZE = args.batch
 
@@ -73,7 +73,13 @@ def main(args):
                             lr=args.lr)
     train(model_0, train_dataloader, val_dataloader, loss_fn, optim,
         EPOCHS, device, accuracy_fn)
+    
+    ### SAVE MODEL ###
+    save_folder = Path("models")
+    model_name = "TinyVGG.pt"
+    save_model(model_0, save_folder, model_name)
 
+    print("TRAINING PROCEDURE FINISHED.")
 
 def parse_args():
     parser = argparse.ArgumentParser()

@@ -1,4 +1,6 @@
-import torch
+from torch.nn import Module
+from torch import save
+from pathlib import Path
 
 ### ACCURACY FUNCTIONS ###
 
@@ -14,4 +16,27 @@ def multiclass_accuracy(y, y_class_idxs):
 
 def multilabel_accuracy(y, y_logits):
     return 999.99
+
+### MODEL SAVING ###
+
+def save_model(model:Module,
+               folder_path:str,
+               model_name:str):
+    '''Saves PyTorch model into specific folder
+    
+    Args:
+    model: PyTorch Module model.
+    folder_path: Path to a folder to save the model into.
+    model_name: Name of the model with ".pt" or ".pth file extension".
+    '''
+
+    folder_path = Path(folder_path)
+    folder_path.mkdir(parents=True, exist_ok=True)
+
+    assert model_name.endswith(".pth") or model_name.endswith(".pt"), "Model name must end with '.pth' or '.pt'."
+    model_path = folder_path / model_name
+
+    print(f"Saving {model_path}.")
+
+    save(obj=model.state_dict(), f=model_path)
 
