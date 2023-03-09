@@ -31,8 +31,9 @@ def main(args):
     ])
 
     ### DATASET ###
-    dataset_path = Path("datasets/dtd/dtd")
+    # dataset_path = Path("datasets/dtd/dtd")
     # dataset_path = Path("datasets/food-101")
+    dataset_path = Path("datasets/pizza_steak_sushi/all")
     split_ratio = args.split_ratio
     BATCH_SIZE = args.batch
 
@@ -86,15 +87,15 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
-    parser.add_argument("--split-ratio", nargs=3, type=float, help='List of ratios of train, val, test dataset split (e.g. [0.6, 0.2, 0.2])')
+    parser.add_argument("--split-ratio", nargs=3, type=float, help='Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)')
     return parser.parse_args()
 
 # arguments for debugging
 # arguments = [
-#     '--epochs', '5',
+#     '--epochs', '20',
 #     '--lr', '0.001',
 #     '--batch', '32',
-#     '--split-ratio', '0.01', '0.01', '0.98'
+#     '--split-ratio', '0.8', '0.19', '0.01'
 # ]
 
 if __name__ == "__main__":

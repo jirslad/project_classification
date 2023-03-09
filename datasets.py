@@ -11,7 +11,7 @@ SEED = 42
 NUM_WORKERS = 0 #os.cpu_count()
 
 
-def create_dataloaders(dataset_dir: str,
+def create_dataloaders(dataset_dir: Path,
     split_ratio: List,
     transform: transforms.Compose,
     batch_size: int,
@@ -23,11 +23,14 @@ def create_dataloaders(dataset_dir: str,
 
     if dataset_dir.name == "dtd":
         dataset = DTDDataset(Path(dataset_dir), transform, multilabel)
-    if dataset_dir.name == "food-101": # TODO: use test split for testing
+    elif dataset_dir.name == "food-101": # TODO: use test split for testing
         dataset = datasets.Food101(root=Path(dataset_dir).parent,
                                    split="train",
                                    transform=transform,
                                    download=False)
+    elif dataset_dir.parent.name == "pizza_steak_sushi":
+        dataset = datasets.ImageFolder(root=dataset_dir,
+                                       transform=transform)
     else:
         print("Wrong dataset path, dataset does not exist.")
 
@@ -52,7 +55,7 @@ class DTDDataset(Dataset):
     """DTD dataset for single-label or multi-label multi-class classification"""
     def __init__(self, dataset_path: Path, transform: transforms.Compose=None, multilabel=False):
 
-        with open(dataset_path / "class_names.txt") as f:
+        with open(dataset_path / "class_names.txt", encoding="utf-8") as f:
             self.classes = f.read().split(" ")
 
         with open(dataset_path / "annotations.csv") as f:
