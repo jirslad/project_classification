@@ -43,7 +43,7 @@ def DTD():
     # find annotations (image paths and labels)
     img_paths = []
     img_labels = []
-    with open(labels_folder_path / "labels_joint_anno.txt") as f:
+    with open(labels_folder_path / "labels_joint_anno.txt", encoding="utf-8") as f:
         text = f.read()
         annotations = text.split(" \n")
     for anno in annotations:
@@ -59,7 +59,7 @@ def DTD():
         img_labels.append(",".join(label_idxs))
 
     # save annotations
-    with open(dtd_path / "annotations.csv", "w", newline="") as f:
+    with open(dtd_path / "annotations.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerows(zip(img_paths, img_labels))
 
