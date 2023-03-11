@@ -45,7 +45,8 @@ def main(args):
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
     # dataset_path = Path("datasets/food-101")
-    dataset_path = Path("datasets/pizza_steak_sushi/all")
+    # dataset_path = Path("datasets/pizza_steak_sushi/all")
+    dataset_path = Path("datasets/pizza_steak_sushi/train_test")
     split_ratio = args.split_ratio
     BATCH_SIZE = args.batch
 
@@ -79,7 +80,7 @@ def main(args):
         for param in model.features.parameters():
             param.requires_grad = False
         model.classifier = torch.nn.Sequential(
-            torch.nn.Dropout(p=0.5, inplace=True),
+            torch.nn.Dropout(p=0.2, inplace=True),
             torch.nn.Linear(in_features=1280,
                             out_features=len(train_dataloader.dataset.dataset.classes))
         ).to(device)
