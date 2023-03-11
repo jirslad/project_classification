@@ -98,6 +98,7 @@ def main(args):
         model.features.requires_grad_=False
         for param in model.features.parameters():
             param.requires_grad = False
+        torch.manual_seed(SEED)
         model.classifier = torch.nn.Sequential(
             torch.nn.Dropout(p=0.2, inplace=True),
             torch.nn.Linear(in_features=1280,
@@ -117,6 +118,7 @@ def main(args):
         loss_fn = torch.nn.CrossEntropyLoss()
     optim = torch.optim.Adam(params=model.parameters(),
                             lr=args.lr)
+    torch.manual_seed(SEED)
     engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
                     EPOCHS, device, accuracy_fn)
     
