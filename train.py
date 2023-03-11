@@ -1,5 +1,6 @@
 import torch
 from torchvision import transforms
+from torchvision.datasets import ImageFolder
 from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
@@ -10,11 +11,11 @@ from typing import List
 
 import datasets
 from models import TinyVGG
-from engine import train
+import engine
 from utils import multiclass_accuracy, multilabel_accuracy, save_model
 
 SEED = 42
-NUM_WORKERS = os.cpu_count()
+NUM_WORKERS = 0 # os.cpu_count()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Training on {device}.")
 
@@ -50,23 +51,41 @@ def main(args):
     split_ratio = args.split_ratio
     BATCH_SIZE = args.batch
 
-    train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
-        dataset_dir=dataset_path,
-        split_ratio=split_ratio,
-        transform=transform,
-        multilabel=multilabel,
-        batch_size=BATCH_SIZE,
-        num_workers=NUM_WORKERS,
-        seed=SEED
-    )
+    # train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
+    #     dataset_dir=dataset_path,
+    #     split_ratio=split_ratio,
+    #     transform=transform,
+    #     multilabel=multilabel,
+    #     batch_size=BATCH_SIZE,
+    #     num_workers=NUM_WORKERS,
+    #     seed=SEED
+    # )
 
-    classes = train_dataloader.dataset.dataset.classes
-
-    print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
-        f"{len(classes)} classes, batch size is {BATCH_SIZE}. \n" \
-        f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
-        f"validation batches and {len(test_dataloader)} testing batches."
+    ### Daniel's split
+    dataset_path = Path("datasets/pizza_steak_sushi")
+    train_dataset = ImageFolder(root=dataset_path/"train",
+                                transform=transform)
+    val_dataset = ImageFolder(root=dataset_path/"test",
+                              transform=transform)
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, BATCH_SIZE, shuffle=True,
+        num_workers=NUM_WORKERS, pin_memory=True
     )
+    val_dataloader = torch.utils.data.DataLoader(val_dataset, BATCH_SIZE,
+        num_workers=NUM_WORKERS, pin_memory=True
+    )
+    test_dataloader = torch.utils.data.DataLoader(val_dataset, BATCH_SIZE,
+        num_workers=NUM_WORKERS, pin_memory=True
+    )
+    classes = train_dataloader.dataset.classes
+    ###
+
+    # classes = train_dataloader.dataset.dataset.classes
+
+    # print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
+    #     f"{len(classes)} classes, batch size is {BATCH_SIZE}. \n" \
+    #     f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
+    #     f"validation batches and {len(test_dataloader)} testing batches."
+    # )
 
     ### MODEL ###
     torch.manual_seed(SEED)
@@ -82,7 +101,7 @@ def main(args):
         model.classifier = torch.nn.Sequential(
             torch.nn.Dropout(p=0.2, inplace=True),
             torch.nn.Linear(in_features=1280,
-                            out_features=len(train_dataloader.dataset.dataset.classes))
+                            out_features=len(classes))
         ).to(device)
                                
     summary(model,
@@ -98,8 +117,8 @@ def main(args):
         loss_fn = torch.nn.CrossEntropyLoss()
     optim = torch.optim.Adam(params=model.parameters(),
                             lr=args.lr)
-    train(model, train_dataloader, val_dataloader, loss_fn, optim,
-        EPOCHS, device, accuracy_fn)
+    engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
+                    EPOCHS, device, accuracy_fn)
     
     ### SAVE MODEL ###
     save_folder = Path("models")
@@ -122,8 +141,8 @@ def parse_args():
 #     '--epochs', '20',
 #     '--lr', '0.001',
 #     '--batch', '32',
-#     '--split-ratio', '0.8', '0.19', '0.01',
-#     '--model', 'TinyVGG'
+#     '--split-ratio', '0.1', '0.1', '0.8',
+#     '--model', 'efficientnet'
 # ]
 
 if __name__ == "__main__":
