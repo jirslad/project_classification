@@ -15,7 +15,7 @@ import engine
 from utils import multiclass_accuracy, multilabel_accuracy, save_model
 
 SEED = 42
-NUM_WORKERS = 0 # os.cpu_count()
+NUM_WORKERS = 0 # os.cpu_count() works wierd in debugging mode (lauches debugged script multiple times)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Training on {device}.")
 
@@ -95,7 +95,7 @@ def main(args):
                         output_classes=len(classes)).to(device)
     elif args.model.lower() == "efficientnet":
         model = efficientnet_b0(parameters=parameters).to(device)
-        model.features.requires_grad_=False
+        
         for param in model.features.parameters():
             param.requires_grad = False
         torch.manual_seed(SEED)
