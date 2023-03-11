@@ -1,5 +1,6 @@
 import torch
 from torchvision import transforms
+from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 import os
@@ -19,16 +20,27 @@ print(f"Training on {device}.")
 
 ### ARGUMENTS
 multilabel = False
-img_size = 64
 
 def main(args):
 
     ### TRANSFORM
     # TODO: add cropping to square
-    transform = transforms.Compose([
-        transforms.Resize((img_size,img_size)),
-        transforms.ToTensor()
-    ])
+    if args.model.lower() == "tinyvgg":
+        img_size = 64
+        transform = transforms.Compose([
+            transforms.Resize((img_size,img_size)),
+            transforms.ToTensor()
+        ])
+    elif args.model.lower() == "efficientnet":
+        img_size = 224
+        # transform = transforms.Compose([
+        #     transforms.Resize((img_size, img_size)),
+        #     transforms.ToTensor(),
+        #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
+        #                          std=[0.229, 0.224, 0.225])
+        # ])
+        parameters = EfficientNet_B0_Weights.DEFAULT
+        transform = parameters.transforms() # auto-transforms
 
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
@@ -57,11 +69,24 @@ def main(args):
 
     ### MODEL ###
     torch.manual_seed(SEED)
-    model_0 = TinyVGG(input_channels=3,
-                    hidden_channels=10,
-                    output_classes=len(classes)).to(device)
-
-    summary(model_0, input_size=[1, 3, img_size, img_size])
+    if args.model.lower() == "tinyvgg":
+        model = TinyVGG(input_channels=3,
+                        hidden_channels=10,
+                        output_classes=len(classes)).to(device)
+    elif args.model.lower() == "efficientnet":
+        model = efficientnet_b0(parameters=parameters)
+        model.features.requires_grad_=False
+        for param in model.features.parameters():
+            param.requires_grad = False
+        del model.classifier[1]
+        model.classifier.append(
+            torch.nn.Linear(in_features=1280,
+                            out_features=len(train_dataloader.dataset.dataset.classes)))
+        model = model.to(device)
+                               
+    summary(model,
+            input_size=[1, 3, img_size, img_size],
+            col_names=["output_size", "num_params", "trainable", "mult_adds"])
 
     ### TRAINING ###
     EPOCHS = args.epochs
@@ -70,15 +95,15 @@ def main(args):
         loss_fn = torch.nn.BCEWithLogitsLoss()
     else:
         loss_fn = torch.nn.CrossEntropyLoss()
-    optim = torch.optim.Adam(params=model_0.parameters(),
+    optim = torch.optim.Adam(params=model.parameters(),
                             lr=args.lr)
-    train(model_0, train_dataloader, val_dataloader, loss_fn, optim,
+    train(model, train_dataloader, val_dataloader, loss_fn, optim,
         EPOCHS, device, accuracy_fn)
     
     ### SAVE MODEL ###
     save_folder = Path("models")
     model_name = "TinyVGG.pt"
-    save_model(model_0, save_folder, model_name)
+    save_model(model, save_folder, model_name)
 
     print("TRAINING PROCEDURE FINISHED.")
 
@@ -88,6 +113,7 @@ def parse_args():
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--split-ratio", nargs=3, type=float, help='Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)')
+    parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnet"])
     return parser.parse_args()
 
 # arguments for debugging
@@ -95,7 +121,8 @@ def parse_args():
 #     '--epochs', '20',
 #     '--lr', '0.001',
 #     '--batch', '32',
-#     '--split-ratio', '0.8', '0.19', '0.01'
+#     '--split-ratio', '0.8', '0.19', '0.01',
+#     '--model', 'TinyVGG'
 # ]
 
 if __name__ == "__main__":
