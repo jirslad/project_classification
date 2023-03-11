@@ -46,46 +46,29 @@ def main(args):
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
     # dataset_path = Path("datasets/food-101")
-    # dataset_path = Path("datasets/pizza_steak_sushi/all")
-    dataset_path = Path("datasets/pizza_steak_sushi/train_test")
+    dataset_path = Path("datasets/pizza_steak_sushi/all")
+    # dataset_path = Path("datasets/pizza_steak_sushi/train_test")
+    
     split_ratio = args.split_ratio
     BATCH_SIZE = args.batch
 
-    # train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
-    #     dataset_dir=dataset_path,
-    #     split_ratio=split_ratio,
-    #     transform=transform,
-    #     multilabel=multilabel,
-    #     batch_size=BATCH_SIZE,
-    #     num_workers=NUM_WORKERS,
-    #     seed=SEED
-    # )
-
-    ### Daniel's split
-    dataset_path = Path("datasets/pizza_steak_sushi")
-    train_dataset = ImageFolder(root=dataset_path/"train",
-                                transform=transform)
-    val_dataset = ImageFolder(root=dataset_path/"test",
-                              transform=transform)
-    train_dataloader = torch.utils.data.DataLoader(train_dataset, BATCH_SIZE, shuffle=True,
-        num_workers=NUM_WORKERS, pin_memory=True
+    train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
+        dataset_dir=dataset_path,
+        split_ratio=split_ratio,
+        transform=transform,
+        multilabel=multilabel,
+        batch_size=BATCH_SIZE,
+        num_workers=NUM_WORKERS,
+        seed=SEED
     )
-    val_dataloader = torch.utils.data.DataLoader(val_dataset, BATCH_SIZE,
-        num_workers=NUM_WORKERS, pin_memory=True
-    )
-    test_dataloader = torch.utils.data.DataLoader(val_dataset, BATCH_SIZE,
-        num_workers=NUM_WORKERS, pin_memory=True
-    )
-    classes = train_dataloader.dataset.classes
-    ###
 
-    # classes = train_dataloader.dataset.dataset.classes
+    classes = train_dataloader.dataset.dataset.classes
 
-    # print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
-    #     f"{len(classes)} classes, batch size is {BATCH_SIZE}. \n" \
-    #     f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
-    #     f"validation batches and {len(test_dataloader)} testing batches."
-    # )
+    print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
+        f"{len(classes)} classes, batch size is {BATCH_SIZE}. \n" \
+        f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
+        f"validation batches and {len(test_dataloader)} testing batches."
+    )
 
     ### MODEL ###
     torch.manual_seed(SEED)
