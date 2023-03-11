@@ -40,8 +40,8 @@ def main(args):
         #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
         #                          std=[0.229, 0.224, 0.225])
         # ])
-        parameters = EfficientNet_B0_Weights.DEFAULT
-        transform = parameters.transforms() # auto-transforms
+        weights = EfficientNet_B0_Weights.DEFAULT
+        transform = weights.transforms() # auto-transforms
 
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
@@ -94,7 +94,7 @@ def main(args):
                         hidden_channels=10,
                         output_classes=len(classes)).to(device)
     elif args.model.lower() == "efficientnet":
-        model = efficientnet_b0(parameters=parameters).to(device)
+        model = efficientnet_b0(weights=weights).to(device)
         
         for param in model.features.parameters():
             param.requires_grad = False
