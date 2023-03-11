@@ -74,15 +74,15 @@ def main(args):
                         hidden_channels=10,
                         output_classes=len(classes)).to(device)
     elif args.model.lower() == "efficientnet":
-        model = efficientnet_b0(parameters=parameters)
+        model = efficientnet_b0(parameters=parameters).to(device)
         model.features.requires_grad_=False
         for param in model.features.parameters():
             param.requires_grad = False
-        del model.classifier[1]
-        model.classifier.append(
+        model.classifier = torch.nn.Sequential(
+            torch.nn.Dropout(p=0.5, inplace=True),
             torch.nn.Linear(in_features=1280,
-                            out_features=len(train_dataloader.dataset.dataset.classes)))
-        model = model.to(device)
+                            out_features=len(train_dataloader.dataset.dataset.classes))
+        ).to(device)
                                
     summary(model,
             input_size=[1, 3, img_size, img_size],
