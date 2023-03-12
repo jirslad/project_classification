@@ -41,8 +41,6 @@ def save_model(model:Module,
 
     print(f"Saving {model_path}.")
 
-    model.to("cpu")
-    
     save_dict = {
         "state_dict": model.state_dict(),
         "class_names": class_names
@@ -50,7 +48,8 @@ def save_model(model:Module,
     save(obj=save_dict, f=model_path)
 
 def load_model(model:Module,
-               model_path: str) -> Module:
+               model_path: str,
+               device: str) -> Module:
     """Loads PyTorch Module model state_dict and assigns it to a model. Also loads class names.
     
     Args:
@@ -60,12 +59,13 @@ def load_model(model:Module,
     Returns:
         model: PyTorch Module model with trained state_dict.
         class_names: List of class names.
+        device: torch.cuda device ("cpu" or "gpu").
     """
 
     assert str(model_path).endswith(".pth") or str(model_path).endswith(".pt"), \
         "Model path must end with '.pth' or '.pt'."
     
-    loaded_dict = load(model_path)
+    loaded_dict = load(model_path, map_location=device)
     model.load_state_dict(loaded_dict["state_dict"])
     class_names = loaded_dict["class_names"]
 

@@ -20,9 +20,9 @@ test_data_folder = Path("datasets/pizza_steak_sushi/custom")
 test_img_paths = list(test_data_folder.glob("*/*.jpg"))
 
 ### LOAD MODEL ###
-model_path = Path("models/efficientnet.pt")
+model_path = Path("models/efficientnet_good.pt")
 model = create_EfficientNetB0(output_classes=3, freeze_features=False)
-model, class_names = load_model(model, model_path)
+model, class_names = load_model(model, model_path, device)
 
 ### RUN PREDICTIONS ###
 model.eval()
