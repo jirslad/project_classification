@@ -25,6 +25,7 @@ def train_step(model, dataloader, loss_fn, optim, device, accuracy_fn):
 
     return train_loss, train_acc
 
+
 def val_step(model, dataloader, loss_fn, device, accuracy_fn):
     """ Step for validation or testing. """
     val_loss, val_acc = 0, 0
@@ -44,6 +45,7 @@ def val_step(model, dataloader, loss_fn, device, accuracy_fn):
     val_acc /= len(dataloader)
 
     return val_loss, val_acc
+
 
 def train(model: torch.nn.Module,
           train_dataloader: torch.utils.data.DataLoader,
@@ -75,7 +77,6 @@ def train(model: torch.nn.Module,
         "val_acc": []
     }
 
-
     for epoch in range(epochs):
         train_loss, train_acc = train_step(model, train_dataloader, loss_fn,
             optimizer, device, accuracy_fn)
@@ -89,7 +90,6 @@ def train(model: torch.nn.Module,
         results["val_loss"].append(val_loss)
         results["train_acc"].append(train_acc)
         results["val_acc"].append(val_acc)
-
 
     return results
 
