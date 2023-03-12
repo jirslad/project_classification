@@ -1,6 +1,7 @@
 from torch.nn import Module
-from torch import save
+from torch import save, load
 from pathlib import Path
+from typing import List
 
 ### ACCURACY FUNCTIONS ###
 
@@ -20,14 +21,16 @@ def multilabel_accuracy(y, y_logits):
 ### MODEL SAVING ###
 
 def save_model(model:Module,
+               class_names: List,
                folder_path:str,
                model_name:str):
-    '''Saves PyTorch model into specific folder
+    '''Saves dictionary with PyTorch model state_dict and class names into specific folder.
     
     Args:
-    model: PyTorch Module model.
-    folder_path: Path to a folder to save the model into.
-    model_name: Name of the model with ".pt" or ".pth file extension".
+        model: PyTorch Module model.
+        class_names: List of strings of class names.
+        folder_path: Path to a folder to save the model into.
+        model_name: Name of the model with ".pt" or ".pth file extension".
     '''
 
     folder_path = Path(folder_path)
@@ -38,5 +41,30 @@ def save_model(model:Module,
 
     print(f"Saving {model_path}.")
 
-    save(obj=model.state_dict(), f=model_path)
+    save_dict = {
+        "state_dict": model.state_dict(),
+        "class_names": class_names
+    }
+    save(obj=save_dict, f=model_path)
 
+def load_model(model:Module,
+               model_path: str) -> Module:
+    """Loads PyTorch Module model state_dict and assigns it to a model. Also loads class names.
+    
+    Args:
+        model: Empty PyTorch Module model.
+        model_path: Path to model parameters (".pt" or ".pth" file).
+    
+    Returns:
+        model: PyTorch Module model with trained state_dict.
+        class_names: List of class names.
+    """
+
+    assert str(model_path).endswith(".pth") or str(model_path).endswith(".pt"), \
+        "Model path must end with '.pth' or '.pt'."
+    
+    loaded_dict = load(model_path)
+    model.load_state_dict(loaded_dict["state_dict"])
+    class_names = loaded_dict["class_names"]
+
+    return model, class_names
