@@ -41,6 +41,8 @@ def save_model(model:Module,
 
     print(f"Saving {model_path}.")
 
+    model.to("cpu")
+    
     save_dict = {
         "state_dict": model.state_dict(),
         "class_names": class_names
