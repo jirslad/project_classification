@@ -13,6 +13,7 @@ import datasets
 from models import TinyVGG
 import engine
 from utils import multiclass_accuracy, multilabel_accuracy, save_model
+from plotting import plot_loss_curves
 
 SEED = 42
 NUM_WORKERS = 0 # os.cpu_count() works wierd in debugging mode (lauches debugged script multiple times)
@@ -102,8 +103,8 @@ def main(args):
     optim = torch.optim.Adam(params=model.parameters(),
                             lr=args.lr)
     torch.manual_seed(SEED)
-    engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
-                    EPOCHS, device, accuracy_fn)
+    results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
+                           EPOCHS, device, accuracy_fn)
     
     ### SAVE MODEL ###
     save_folder = Path("models")
@@ -111,6 +112,9 @@ def main(args):
     save_model(model, save_folder, model_name)
 
     print("TRAINING PROCEDURE FINISHED.")
+
+    ### PLOT RESULTS ###
+    plot_loss_curves(results)
 
 def parse_args():
     parser = argparse.ArgumentParser()
