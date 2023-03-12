@@ -32,12 +32,13 @@ def plot_loss_curves(results: Dict):
 
     plt.show()
 
+def plot_predictions(model,
+                     img_paths
+                     ):
+    """ Makes predictions on several images and plots them.
+    
+    Args:
 
-results = {
-    "train_loss": [1.04, 0.82, 0.34],
-    "val_loss": [1.14, 0.92, 0.54],
-    "train_acc": [0.38, 0.59, 0.83],
-    "val_acc": [0.33, 0.49, 0.75]
-}
+    """
 
-plot_loss_curves(results)
+    pass
