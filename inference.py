@@ -17,6 +17,7 @@ SEED = 42
 
 ### GET DATA ###
 test_data_folder = Path("datasets\pizza_steak_sushi\custom")
+print(test_data_folder)
 test_img_paths = list(test_data_folder.glob("*/*.jpg"))
 
 ### LOAD MODEL ###
@@ -30,6 +31,7 @@ rows, cols = 3, 7
 num_imgs = rows * cols
 random.seed(SEED)
 img_paths = random.sample(test_img_paths, min(num_imgs, len(test_img_paths)))
+print(img_paths)
 
 transform = transforms.Compose([
             transforms.Resize((224, 224)),
