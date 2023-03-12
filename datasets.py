@@ -11,7 +11,7 @@ SEED = 42
 NUM_WORKERS = 0 #os.cpu_count()
 
 
-def create_dataloaders(dataset_dir: Path,
+def create_dataloaders(dataset_dir: str,
     split_ratio: List,
     transform: transforms.Compose,
     batch_size: int,
