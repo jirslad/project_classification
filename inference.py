@@ -70,7 +70,7 @@ with torch.inference_mode():
         plt.axis(False)
 
 plt.suptitle(f"Label | Prediction & Probability \n" +
-             f" Overall Accuracy = {100 * correct_count / (i+1):.1f} %")
+             f" Overall Accuracy = {100 * correct_count / (len(img_paths)):.1f} %")
 plt.show()
 
 confmat = ConfusionMatrix(num_classes=len(class_names), task="multiclass")
