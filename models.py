@@ -1,4 +1,5 @@
 from torch import nn
+from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
 
 class TinyVGG(nn.Module):
     
@@ -28,4 +29,20 @@ class TinyVGG(nn.Module):
 
     def forward(self, x):
         return self.classifier(self.conv_block_2(self.conv_block_1(x)))
+
+def create_EfficientNetB0(output_classes:int, freeze_features: bool):
+
+    model = efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT)
+    
+    if freeze_features:
+        for param in model.features.parameters():
+            param.requires_grad = False
+
+    model.classifier = nn.Sequential(
+        nn.Dropout(p=0.2, inplace=True),
+        nn.Linear(in_features=1280,
+                    out_features=output_classes)
+    )
+
+    return model
 

@@ -1,7 +1,7 @@
 import torch
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
-from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
+from torchvision.models import EfficientNet_B0_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 import os
@@ -10,7 +10,7 @@ import argparse
 from typing import List
 
 import datasets
-from models import TinyVGG
+from models import TinyVGG, create_EfficientNetB0
 import engine
 from utils import multiclass_accuracy, multilabel_accuracy, save_model
 from plotting import plot_loss_curves
@@ -78,16 +78,8 @@ def main(args):
                         hidden_channels=10,
                         output_classes=len(classes)).to(device)
     elif args.model.lower() == "efficientnet":
-        model = efficientnet_b0(weights=weights).to(device)
-        
-        for param in model.features.parameters():
-            param.requires_grad = False
-        torch.manual_seed(SEED)
-        model.classifier = torch.nn.Sequential(
-            torch.nn.Dropout(p=0.2, inplace=True),
-            torch.nn.Linear(in_features=1280,
-                            out_features=len(classes))
-        ).to(device)
+        model = create_EfficientNetB0(output_classes=len(classes),
+                                      freeze_features=True).to(device)
                                
     summary(model,
             input_size=[1, 3, img_size, img_size],
@@ -108,13 +100,18 @@ def main(args):
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = "TinyVGG.pt"
-    save_model(model, save_folder, model_name)
-
-    print("TRAINING PROCEDURE FINISHED.")
+    if args.model.lower() == "tinyvgg":
+        model_name = "tinyvgg.pt"
+    elif args.model.lower() == "efficientnet":
+        model_name = "efficientnet.pt"
+    
+    save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
     plot_loss_curves(results)
+
+
+    print("TRAINING PROCEDURE FINISHED.")
 
 def parse_args():
     parser = argparse.ArgumentParser()
