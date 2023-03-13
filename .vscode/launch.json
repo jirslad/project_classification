@@ -11,7 +11,10 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--epochs", "5", "--lr", "0.001", "--batch", "32", "--split-ratio", "0.01", "0.01", "0.98"]
+            // "args": ["--epochs", "5", "--lr", "0.003", "--split-ratio", "0.05", "0.05", "0.9",
+            //     "--batch", "32", "--model", "efficientnet"]
+            "args": ["--imgs-path", "datasets/pizza_steak_sushi/custom", "--model-path", "models/efficientnet_good.pt",
+                "--rows", "5", "--columns", "9",]
         }
     ]
 }
