@@ -59,7 +59,7 @@ def load_model(model:Module,
     Returns:
         model: PyTorch Module model with trained state_dict.
         class_names: List of class names.
-        device: torch.cuda device ("cpu" or "gpu").
+        device: torch.cuda device ("cpu" or "cuda").
     """
 
     assert str(model_path).endswith(".pth") or str(model_path).endswith(".pt"), \
