@@ -1,10 +1,8 @@
 import torch
 from torchvision import transforms
-from torchvision.datasets import ImageFolder
 from torchvision.models import EfficientNet_B0_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
-import os
 from pathlib import Path
 import argparse
 from typing import List
@@ -16,21 +14,21 @@ from utils import multiclass_accuracy, multilabel_accuracy, save_model
 from plotting import plot_loss_curves
 
 SEED = 42
-NUM_WORKERS = 0 # os.cpu_count() works wierd in debugging mode (lauches debugged script multiple times)
+NUM_WORKERS = 0 # os.cpu_count() lauches debugged script multiple times
 device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Training on {device}.")
 
 ### ARGUMENTS
 multilabel = False
 
+### MAIN
 def main(args):
 
     ### TRANSFORM
-    # TODO: add cropping to square
     if args.model.lower() == "tinyvgg":
         img_size = 64
         transform = transforms.Compose([
-            transforms.Resize((img_size,img_size)),
+            # transforms.Resize((img_size,img_size)),
+            transforms.CenterCrop((img_size,img_size)),
             transforms.ToTensor()
         ])
     elif args.model.lower() == "efficientnet":
@@ -47,18 +45,19 @@ def main(args):
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
     # dataset_path = Path("datasets/food-101")
-    dataset_path = Path("datasets/pizza_steak_sushi/all")
     # dataset_path = Path("datasets/pizza_steak_sushi/train_test")
+    # dataset_path = Path("datasets/pizza_steak_sushi/all")
+    dataset_path = Path(args.data_path)
     
     split_ratio = args.split_ratio
-    BATCH_SIZE = args.batch
+    batch_size = args.batch
 
     train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
         dataset_dir=dataset_path,
         split_ratio=split_ratio,
         transform=transform,
         multilabel=multilabel,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         num_workers=NUM_WORKERS,
         seed=SEED
     )
@@ -66,7 +65,7 @@ def main(args):
     classes = train_dataloader.dataset.dataset.classes
 
     print(f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
-        f"{len(classes)} classes, batch size is {BATCH_SIZE}. \n" \
+        f"{len(classes)} classes, batch size is {batch_size}. \n" \
         f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
         f"validation batches and {len(test_dataloader)} testing batches."
     )
@@ -95,6 +94,7 @@ def main(args):
     optim = torch.optim.Adam(params=model.parameters(),
                             lr=args.lr)
     torch.manual_seed(SEED)
+    print(f"Training on {device}...")
     results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
                            EPOCHS, device, accuracy_fn)
     
@@ -118,8 +118,9 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
-    parser.add_argument("--split-ratio", nargs=3, type=float, help='Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)')
+    parser.add_argument("--split-ratio", nargs=3, type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)")
     parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnet"])
+    parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
     return parser.parse_args()
 
 # arguments for debugging
@@ -136,5 +137,3 @@ if __name__ == "__main__":
     args = parse_args()
     main(args)
 
-
-aa = 1
