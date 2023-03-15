@@ -115,7 +115,7 @@ def main(args):
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = f"model_{args.model}_{args.epochs}ep_{data_percent}perc-data"
+    model_name = f"model_{args.model}_{args.epochs}ep_{data_percent}perc-data.pt"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
