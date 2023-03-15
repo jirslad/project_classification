@@ -6,7 +6,7 @@ from torchvision import transforms
 from torchmetrics import ConfusionMatrix
 from mlxtend.plotting import plot_confusion_matrix
 from pathlib import Path
-from models import create_EfficientNetB0
+from models import create_EfficientNetB0, create_EfficientNetB2
 import random
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -25,7 +25,7 @@ def main(args):
 
     ### LOAD MODEL ###
     model_path = args.model_path
-    model = create_EfficientNetB0(output_classes=3, freeze_features=False)
+    model = create_EfficientNetB2(output_classes=3, freeze_features=False)
     model, class_names = load_model(model, model_path, device)
     model.to(device)
 
@@ -37,8 +37,8 @@ def main(args):
     img_paths = random.sample(test_img_paths, min(num_imgs, len(test_img_paths)))
 
     transform = transforms.Compose([
-        # transforms.Resize((224, 224)),
-        transforms.CenterCrop((224,224)),
+        transforms.Resize(256, interpolation=transforms.InterpolationMode.BICUBIC),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
@@ -93,6 +93,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--imgs-path", type=str, required=True, help="Path to folder with images.")
     parser.add_argument("--model-path", type=str, required=True, help="Path to a '.pt' or '.pth' model with class names.")
+    # parser.add_argument("--model-arch", type=str, required=True, help="Model architecture. E.g. 'efficientnetB0'.")
     parser.add_argument("--rows", type=int, default=3, help="Number of images in a row on the plot with predictions")
     parser.add_argument("--columns", type=int, default=4, help="Number of images in a column on the plot with predictions")
     return parser.parse_args()
