@@ -1,7 +1,6 @@
 ''' Functions for training, validation and testing '''
 import torch
-from tqdm.auto import tqdm
-
+from torch.utils.tensorboard import SummaryWriter
 
 def train_step(model, dataloader, loss_fn, optim, device, accuracy_fn):
     
@@ -54,7 +53,8 @@ def train(model: torch.nn.Module,
           optimizer: torch.optim.Optimizer,
           epochs: int,
           device: torch.device,
-          accuracy_fn):
+          accuracy_fn,
+          writer: SummaryWriter=None):
     """ Training procedure. 
     
     Performs training of a PyTorch model with a training DataLoader using
@@ -77,6 +77,10 @@ def train(model: torch.nn.Module,
         "val_acc": []
     }
 
+    # for tensorboard
+    imgs = next(iter(train_dataloader))
+    dummy_tensor = torch.randn(imgs[0].shape)
+
     for epoch in range(epochs):
         train_loss, train_acc = train_step(model, train_dataloader, loss_fn,
             optimizer, device, accuracy_fn)
@@ -90,6 +94,20 @@ def train(model: torch.nn.Module,
         results["val_loss"].append(val_loss)
         results["train_acc"].append(train_acc)
         results["val_acc"].append(val_acc)
+
+        # TensorBoard experiment tracking
+        if writer:
+            writer.add_scalars(main_tag="Loss",
+                            tag_scalar_dict={"train": train_loss,
+                                                "val": val_loss},
+                            global_step=epoch)
+            writer.add_scalars(main_tag="Accuracy",
+                            tag_scalar_dict={"train": train_acc,
+                                                "val": val_acc},
+                            global_step=epoch)
+            writer.add_graph(model=model,
+                            input_to_model=dummy_tensor.to(device))
+            writer.close()
 
     return results
 
