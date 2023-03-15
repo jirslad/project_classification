@@ -1,6 +1,6 @@
 import torch
 from torchvision import transforms
-from torchvision.models import EfficientNet_B0_Weights
+from torchvision.models import EfficientNet_B0_Weights, EfficientNet_B2_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 from pathlib import Path
@@ -8,9 +8,9 @@ import argparse
 from typing import List
 
 import datasets
-from models import TinyVGG, create_EfficientNetB0
+from models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2
 import engine
-from utils import multiclass_accuracy, multilabel_accuracy, save_model
+from utils import multiclass_accuracy, multilabel_accuracy, save_model, create_writer
 from plotting import plot_loss_curves
 
 SEED = 42
@@ -22,24 +22,28 @@ multilabel = False
 
 ### MAIN
 def main(args):
-
+    
     ### TRANSFORM
-    if args.model.lower() == "tinyvgg":
+    if args.model == "tinyvgg":
         img_size = 64
         transform = transforms.Compose([
-            # transforms.Resize((img_size,img_size)),
-            transforms.CenterCrop((img_size,img_size)),
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.CenterCrop(img_size),
             transforms.ToTensor()
         ])
-    elif args.model.lower() == "efficientnet":
+    elif "efficientnet" in args.model:
         img_size = 224
         # transform = transforms.Compose([
-        #     transforms.Resize((img_size, img_size)),
+        #     transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+        #     transforms.CenterCrop(img_size),
         #     transforms.ToTensor(),
         #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
         #                          std=[0.229, 0.224, 0.225])
         # ])
-        weights = EfficientNet_B0_Weights.DEFAULT
+        if args.model == "efficientnetB0":
+            weights = EfficientNet_B0_Weights.DEFAULT
+        elif args.model == "efficientnetB2":
+            weights = EfficientNet_B2_Weights.DEFAULT
         transform = weights.transforms() # auto-transforms
 
     ### DATASET ###
@@ -72,18 +76,29 @@ def main(args):
 
     ### MODEL ###
     torch.manual_seed(SEED)
-    if args.model.lower() == "tinyvgg":
+    if args.model == "tinyvgg":
         model = TinyVGG(input_channels=3,
                         hidden_channels=10,
                         output_classes=len(classes)).to(device)
-    elif args.model.lower() == "efficientnet":
+    elif args.model == "efficientnetB0":
         model = create_EfficientNetB0(output_classes=len(classes),
                                       freeze_features=True).to(device)
-                               
-    summary(model,
-            input_size=[1, 3, img_size, img_size],
-            col_names=["output_size", "num_params", "trainable", "mult_adds"])
+    elif args.model == "efficientnetB2":
+        model = create_EfficientNetB2(output_classes=len(classes),
+                                      freeze_features=True).to(device)
 
+    if args.summary:                 
+        summary(model,
+                input_size=[1, 3, img_size, img_size],
+                col_names=["output_size", "num_params", "trainable", "mult_adds"])
+
+    ### EXPERIMENT TRACKING
+    if args.track:
+        data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
+        writer = create_writer(experiment_name=f"data_{data_percent}_percent",
+                    model_name=f"{args.model}",
+                    extra=f"{args.epochs}_epochs")
+    
     ### TRAINING ###
     EPOCHS = args.epochs
     accuracy_fn = multiclass_accuracy
@@ -96,22 +111,18 @@ def main(args):
     torch.manual_seed(SEED)
     print(f"Training on {device}...")
     results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
-                           EPOCHS, device, accuracy_fn)
+                           args.epochs, device, accuracy_fn, writer=writer)
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    if args.model.lower() == "tinyvgg":
-        model_name = "tinyvgg.pt"
-    elif args.model.lower() == "efficientnet":
-        model_name = "efficientnet.pt"
-    
+    model_name = f"model_{args.model}_{args.epochs}ep_{data_percent}perc-data"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
     plot_loss_curves(results)
 
-
     print("TRAINING PROCEDURE FINISHED.")
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -119,8 +130,10 @@ def parse_args():
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--split-ratio", nargs=3, type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)")
-    parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnet"])
+    parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnetB0", "efficientnetB2"])
     parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
+    parser.add_argument("--summary", action="store_true", help="Show model summary.")
+    parser.add_argument("--track", action="store_true", help="Track model experiment.")
     return parser.parse_args()
 
 # arguments for debugging
@@ -131,6 +144,7 @@ def parse_args():
 #     '--split-ratio', '0.1', '0.1', '0.8',
 #     '--model', 'efficientnet'
 # ]
+
 
 if __name__ == "__main__":
     
