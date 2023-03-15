@@ -119,7 +119,8 @@ def main(args):
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
-    plot_loss_curves(results)
+    if args.plot:
+        plot_loss_curves(results)
 
     print("TRAINING PROCEDURE FINISHED.")
 
@@ -134,6 +135,7 @@ def parse_args():
     parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
     parser.add_argument("--summary", action="store_true", help="Show model summary.")
     parser.add_argument("--track", action="store_true", help="Track model experiment.")
+    parser.add_argument("--plot", action="store_true", help="Plot training results.")
     return parser.parse_args()
 
 # arguments for debugging
