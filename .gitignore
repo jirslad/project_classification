@@ -1,4 +1,8 @@
 datasets/
 yolov5/
 literature/
+runs/
 __pycache__/
+
+*.pt
+*.pth
