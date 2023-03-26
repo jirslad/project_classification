@@ -125,8 +125,8 @@ def main(args):
     if args.track:
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                                model_name=f"{args.model}",
-                               num_epochs=f"{args.epochs}",
-                               extra=f"{args.lr:.4f}")
+                               num_epochs=f"{args.epochs}ep",
+                               extra=f"{args.lr:.4f}lr")
     else:
         writer = None
     
@@ -161,7 +161,7 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
-    parser.add_argument("--split-ratio", nargs=3, type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)")
+    parser.add_argument("--split-ratio", nargs="+", type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2). Val can be ommited.")
     parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnetB0", "efficientnetB2", "vit_scratch", "vitB16"])
     parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
     parser.add_argument("--summary", action="store_true", help="Show model summary.")

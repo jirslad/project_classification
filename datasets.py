@@ -21,6 +21,7 @@ def create_dataloaders(dataset_dir: str,
 ):
     """Creates train, val and test dataloaders from random split of DTD dataset."""
 
+    # TODO: use faster image loading (https://discuss.pytorch.org/t/how-to-speed-up-the-data-loader/13740/3)
     if dataset_dir.name == "dtd":
         dataset = DTDDataset(Path(dataset_dir), transform, multilabel)
     elif dataset_dir.name == "food-101": # TODO: use test split for testing
@@ -28,15 +29,24 @@ def create_dataloaders(dataset_dir: str,
                                    split="train",
                                    transform=transform,
                                    download=False)
+        val_dataset = datasets.Food101(root=Path(dataset_dir).parent,
+                                        split="test",
+                                        transform=transform,
+                                        download=False)
     elif dataset_dir.parent.name == "pizza_steak_sushi":
         dataset = datasets.ImageFolder(root=dataset_dir,
                                        transform=transform)
     else:
         print("Wrong dataset path, dataset does not exist.")
 
-    train_dataset, val_dataset, test_dataset = random_split(
-        dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
-    )
+    if len(split_ratio) == 3:
+        train_dataset, val_dataset, test_dataset = random_split(
+            dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
+        )
+    elif len(split_ratio) == 2:
+        train_dataset, test_dataset = random_split(
+            dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
+        )
 
     train_loader = DataLoader(train_dataset, batch_size, shuffle=True,
         num_workers=num_workers, pin_memory=True
