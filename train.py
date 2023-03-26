@@ -80,7 +80,7 @@ def main(args):
 
     classes = train_dataloader.dataset.dataset.classes
 
-    print(f"Dataset path: {dataset_path}.\n" \ 
+    print(f"Dataset path: {dataset_path}.\n" \
           f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
           f"{len(classes)} classes, batch size is {batch_size}. \n" \
           f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
