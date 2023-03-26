@@ -47,6 +47,9 @@ def create_dataloaders(dataset_dir: str,
         train_dataset, test_dataset = random_split(
             dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
         )
+        val_dataset, _ = random_split(
+            dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
+        )
 
     train_loader = DataLoader(train_dataset, batch_size, shuffle=True,
         num_workers=num_workers, pin_memory=True
