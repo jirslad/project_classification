@@ -124,9 +124,9 @@ def main(args):
     data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
     if args.track:
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
-                    model_name=f"{args.model}",
-                    num_epochs=f"{args.epochs}",
-                    extra=f"{args.lr:.4f}")
+                               model_name=f"{args.model}",
+                               num_epochs=f"{args.epochs}",
+                               extra=f"{args.lr:.4f}")
     else:
         writer = None
     
