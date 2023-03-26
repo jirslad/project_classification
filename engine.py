@@ -1,5 +1,6 @@
 ''' Functions for training, validation and testing '''
 import torch
+from time import time
 from torch.utils.tensorboard import SummaryWriter
 
 def train_step(model, dataloader, loss_fn, optim, device, accuracy_fn):
@@ -80,15 +81,18 @@ def train(model: torch.nn.Module,
     # for tensorboard
     imgs = next(iter(train_dataloader))
     dummy_tensor = torch.randn(imgs[0].shape)
+    
+    time_start = time()
 
     for epoch in range(epochs):
         train_loss, train_acc = train_step(model, train_dataloader, loss_fn,
             optimizer, device, accuracy_fn)
         val_loss, val_acc = val_step(model, val_dataloader, loss_fn, device, accuracy_fn)
 
+        time_s = time() - time_start
         if epoch == 0:
-            print(f"Epoch | Train loss | Val loss | Train acc | Val acc")
-        print(f"{epoch:^5} |   {train_loss:.4f}   |  {val_loss:.4f}  |   {train_acc:.3f}   | {val_acc:.3f} ")
+            print(f"Epoch | Train loss | Val loss | Train acc | Val acc | Time [s]")
+        print(f"{epoch:^5} |   {train_loss:.4f}   |  {val_loss:.4f}  |   {train_acc:.3f}   |  {val_acc:.3f}  |   {time_s:.0f}")
 
         results["train_loss"].append(train_loss)
         results["val_loss"].append(val_loss)
