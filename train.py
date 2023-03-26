@@ -1,6 +1,6 @@
 import torch
 from torchvision import transforms
-from torchvision.models import EfficientNet_B0_Weights, EfficientNet_B2_Weights
+from torchvision.models import EfficientNet_B0_Weights, EfficientNet_B2_Weights, ViT_B_16_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 from pathlib import Path
@@ -8,7 +8,8 @@ import argparse
 from typing import List
 
 import datasets
-from models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2
+from models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
+from vit import ViT
 import engine
 from utils import multiclass_accuracy, multilabel_accuracy, save_model, create_writer
 from plotting import plot_loss_curves
@@ -27,7 +28,7 @@ def main(args):
     if args.model == "tinyvgg":
         img_size = 64
         transform = transforms.Compose([
-            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC), 
             transforms.CenterCrop(img_size),
             transforms.ToTensor()
         ])
@@ -45,6 +46,17 @@ def main(args):
         elif args.model == "efficientnetB2":
             weights = EfficientNet_B2_Weights.DEFAULT
         transform = weights.transforms() # auto-transforms
+    elif args.model == "vit_scratch":
+        img_size = 224
+        transform = transforms.Compose([
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.CenterCrop(img_size),
+            transforms.ToTensor()
+        ])
+    elif args.model == "vitB16":
+        img_size = 224
+        weights = ViT_B_16_Weights.IMAGENET1K_V1
+        transform = weights.transforms()
 
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
@@ -86,18 +98,36 @@ def main(args):
     elif args.model == "efficientnetB2":
         model = create_EfficientNetB2(output_classes=len(classes),
                                       freeze_features=True).to(device)
-
+    elif args.model == "vit_scratch":
+        model = ViT(img_height=img_size,
+            img_width=img_size,
+            img_channels=3,
+            patch_size=16,
+            embedding_dimension=768,
+            encoder_layers=12//2,
+            msa_heads=12,
+            embedding_dropout=0.1,
+            msa_dropout=0.0,
+            mlp_dropout=0.1,
+            mlp_units=3072//3,
+            out_classes=len(classes)).to(device)
+    elif args.model == "vitB16":
+        model = create_ViTB16(output_classes=len(classes),
+                              freeze_features=True).to(device)
+        
     if args.summary:                 
         summary(model,
                 input_size=[1, 3, img_size, img_size],
-                col_names=["output_size", "num_params", "trainable", "mult_adds"])
+                col_names=["input_size", "output_size", "num_params", "trainable", "mult_adds"])
 
     ### EXPERIMENT TRACKING
+    data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
     if args.track:
-        data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                     model_name=f"{args.model}",
                     extra=f"{args.epochs}_epochs")
+    else:
+        writer = None
     
     ### TRAINING ###
     EPOCHS = args.epochs
@@ -107,7 +137,8 @@ def main(args):
     else:
         loss_fn = torch.nn.CrossEntropyLoss()
     optim = torch.optim.Adam(params=model.parameters(),
-                            lr=args.lr)
+                             lr=args.lr,
+                             weight_decay=0.3)
     torch.manual_seed(SEED)
     print(f"Training on {device}...")
     results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
@@ -131,7 +162,7 @@ def parse_args():
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--split-ratio", nargs=3, type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2)")
-    parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnetB0", "efficientnetB2"])
+    parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnetB0", "efficientnetB2", "vit_scratch", "vitB16"])
     parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
     parser.add_argument("--summary", action="store_true", help="Show model summary.")
     parser.add_argument("--track", action="store_true", help="Track model experiment.")
