@@ -126,7 +126,7 @@ def main(args):
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                     model_name=f"{args.model}",
                     num_epochs=f"{args.epochs}"
-                    extra=f"{args.epochs}_epochs")
+                    extra=f"{args.lr}")
     else:
         writer = None
     
