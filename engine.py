@@ -105,8 +105,8 @@ def train(model: torch.nn.Module,
                             tag_scalar_dict={"train": train_acc,
                                                 "val": val_acc},
                             global_step=epoch)
-            writer.add_graph(model=model,
-                            input_to_model=dummy_tensor.to(device))
+            # writer.add_graph(model=model,
+            #                 input_to_model=dummy_tensor.to(device))
             writer.close()
 
     return results
