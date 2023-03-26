@@ -77,7 +77,8 @@ def load_model(model:Module,
 
 
 def create_writer(experiment_name: str, 
-                  model_name: str, 
+                  model_name: str,
+                  num_epochs: str,
                   extra: str=None) -> SummaryWriter():
     """Creates a tensorboard SummaryWriter() saving to a specific log_dir.
 
@@ -88,6 +89,7 @@ def create_writer(experiment_name: str,
     Args:
         experiment_name (str): Name of experiment.
         model_name (str): Name of model.
+        num_epochs (str): Number of trainig epochs.
         extra (str, optional): Anything extra to add to the directory. Defaults to None.
 
     Returns:
@@ -105,9 +107,9 @@ def create_writer(experiment_name: str,
     timestamp = datetime.now().strftime("%Y-%m-%d") # returns current date in YYYY-MM-DD format
 
     if extra:
-        log_dir = os.path.join("runs", timestamp, experiment_name, model_name, extra)
+        log_dir = os.path.join("runs", timestamp, experiment_name, model_name, num_epochs, extra)
     else:
-        log_dir = os.path.join("runs", timestamp, experiment_name, model_name)
+        log_dir = os.path.join("runs", timestamp, experiment_name, num_epochs, model_name)
         
     print(f"[INFO] Created SummaryWriter, saving to: {log_dir}...")
 

@@ -125,12 +125,12 @@ def main(args):
     if args.track:
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                     model_name=f"{args.model}",
+                    num_epochs=f"{args.epochs}"
                     extra=f"{args.epochs}_epochs")
     else:
         writer = None
     
     ### TRAINING ###
-    EPOCHS = args.epochs
     accuracy_fn = multiclass_accuracy
     if multilabel:
         loss_fn = torch.nn.BCEWithLogitsLoss()
@@ -146,7 +146,7 @@ def main(args):
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = f"model_{args.model}_{args.epochs}ep_{data_percent}perc-data.pt"
+    model_name = f"model_{args.model}_{args.epochs}ep_{args.lr:.4f}lr_{data_percent}perc-data.pt"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
