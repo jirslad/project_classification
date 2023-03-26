@@ -70,11 +70,9 @@ def create_ViTB16(output_classes:int, freeze_features:bool):
     model = vit_b_16(weights=ViT_B_16_Weights.IMAGENET1K_V1)
 
     if freeze_features:
-        for param in model.conv_proj.parameters():
-            param.requires_grad = False
-        for param in model.encoder.parameters():
+        for param in model.parameters():
             param.requires_grad = False
 
-    model.heads = nn.Sequential(nn.Linear(in_features=768, out_features=output_classes))
+    model.heads = nn.Linear(in_features=768, out_features=output_classes)
 
     return model
