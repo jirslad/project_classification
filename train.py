@@ -68,6 +68,7 @@ def main(args):
     split_ratio = args.split_ratio
     batch_size = args.batch
 
+    print(f"DEBUG: dataset_path: {dataset_path}, parent: {dataset_path.parent}")
     train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
         dataset_dir=dataset_path,
         split_ratio=split_ratio,
