@@ -85,7 +85,7 @@ def create_writer(experiment_name: str,
     log_dir is a combination of runs/timestamp/experiment_name/model_name/extra.
 
     Where timestamp is the current date in YYYY-MM-DD format.
-
+ 
     Args:
         experiment_name (str): Name of experiment.
         model_name (str): Name of model.
