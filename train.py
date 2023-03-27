@@ -122,7 +122,10 @@ def main(args):
                 col_names=["input_size", "output_size", "num_params", "trainable", "mult_adds"])
 
     ### EXPERIMENT TRACKING
-    data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
+    if len(split_ratio) == 3:
+        data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
+    elif len(split_ratio) == 4:
+        data_percent = int(round((split_ratio[0] / sum(split_ratio[:2])) * 100))
     if args.track:
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                                model_name=f"{args.model}",
