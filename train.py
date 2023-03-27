@@ -68,7 +68,6 @@ def main(args):
     split_ratio = args.split_ratio
     batch_size = args.batch
 
-    print(f"DEBUG: dataset_path: {dataset_path}, parent: {dataset_path.parent}")
     train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
         dataset_dir=dataset_path,
         split_ratio=split_ratio,
@@ -96,10 +95,10 @@ def main(args):
                         output_classes=len(classes)).to(device)
     elif args.model == "efficientnetB0":
         model = create_EfficientNetB0(output_classes=len(classes),
-                                      freeze_features=True).to(device)
+                                      freeze_features=args.freeze).to(device)
     elif args.model == "efficientnetB2":
         model = create_EfficientNetB2(output_classes=len(classes),
-                                      freeze_features=True).to(device)
+                                      freeze_features=args.freeze).to(device)
     elif args.model == "vit_scratch":
         model = ViT(img_height=img_size,
             img_width=img_size,
@@ -115,8 +114,8 @@ def main(args):
             out_classes=len(classes)).to(device)
     elif args.model == "vitB16":
         model = create_ViTB16(output_classes=len(classes),
-                              freeze_features=True).to(device)
-        
+                              freeze_features=args.freeze).to(device)
+     
     if args.summary:                 
         summary(model,
                 input_size=[1, 3, img_size, img_size],
@@ -169,6 +168,7 @@ def parse_args():
     parser.add_argument("--summary", action="store_true", help="Show model summary.")
     parser.add_argument("--track", action="store_true", help="Track model experiment.")
     parser.add_argument("--plot", action="store_true", help="Plot training results.")
+    parser.add_argument("--freeze", action="store_true", help="Freeze feature extractor.")
     return parser.parse_args()
 
 # arguments for debugging

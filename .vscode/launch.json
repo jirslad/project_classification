@@ -11,8 +11,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--data-path", "datasets/pizza_steak_sushi/all", "--epochs", "2", "--lr", "0.003",
-                "--split-ratio", "0.01", "0.01", "0.98", "--batch", "4", "--model", "vitB16"]
+            "args": ["--data-path", "datasets/food-101", "--epochs", "5", "--lr", "0.003",
+                "--split-ratio", "0.05", "0.95", "--batch", "4", "--model", "vitB16", "--track", "--freeze", "--summary"]
             // "args": ["--imgs-path", "datasets/pizza_steak_sushi/custom",
             //     "--model-path", "models/efficientnetB2.pt",
             //     "--rows", "5", "--columns", "9"]
