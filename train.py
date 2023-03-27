@@ -24,6 +24,8 @@ multilabel = False
 ### MAIN
 def main(args):
     
+    print(args.split_ratio)
+    
     ### TRANSFORM
     if args.model == "tinyvgg":
         img_size = 64
