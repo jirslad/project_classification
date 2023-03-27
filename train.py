@@ -127,10 +127,11 @@ def main(args):
     elif len(split_ratio) == 4:
         data_percent = int(round((split_ratio[0] / sum(split_ratio[:2])) * 100))
     if args.track:
+        freeze = "_freeze" if args.freeze else ""
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
-                               model_name=f"{args.model}",
+                               model_name=f"{args.model}{freeze}",
                                num_epochs=f"{args.epochs}ep",
-                               extra=f"{args.lr:.5f}lr")
+                               extra=f"{args.lr:.6f}lr")
     else:
         writer = None
     
@@ -150,7 +151,7 @@ def main(args):
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = f"model_{args.model}_{args.epochs}ep_{args.lr:.5f}lr_{data_percent}perc-data.pt"
+    model_name = f"model_{args.model}_{args.epochs}ep_{args.lr:.6f}lr_{data_percent}perc-data.pt"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
