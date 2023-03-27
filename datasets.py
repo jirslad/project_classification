@@ -39,7 +39,6 @@ def create_dataloaders(dataset_dir: str,
     else:
         print("Wrong dataset path, dataset does not exist.")
 
-    print(len(split_ratio), split_ratio[:2], split_ratio[2:])
     if len(split_ratio) == 3:
         train_dataset, val_dataset, test_dataset = random_split(
             dataset, split_ratio, generator=torch.Generator().manual_seed(SEED)
