@@ -127,7 +127,7 @@ def main(args):
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                                model_name=f"{args.model}",
                                num_epochs=f"{args.epochs}ep",
-                               extra=f"{args.lr:.4f}lr")
+                               extra=f"{args.lr:.5f}lr")
     else:
         writer = None
     
@@ -147,7 +147,7 @@ def main(args):
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = f"model_{args.model}_{args.epochs}ep_{args.lr:.4f}lr_{data_percent}perc-data.pt"
+    model_name = f"model_{args.model}_{args.epochs}ep_{args.lr:.5f}lr_{data_percent}perc-data.pt"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
