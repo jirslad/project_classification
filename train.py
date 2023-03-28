@@ -95,6 +95,7 @@ def main(args):
 
     classes = train_dataloader.dataset.dataset.classes
 
+    print("Better data augmentation.")
     print(f"Dataset path: {dataset_path}.\n" \
           f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
           f"{len(classes)} classes, batch size is {batch_size}. \n" \
