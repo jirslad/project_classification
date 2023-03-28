@@ -34,18 +34,21 @@ def main(args):
         ])
     elif "efficientnet" in args.model:
         img_size = 224
-        # transform = transforms.Compose([
-        #     transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
-        #     transforms.CenterCrop(img_size),
-        #     transforms.ToTensor(),
-        #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
-        #                          std=[0.229, 0.224, 0.225])
-        # ])
-        if args.model == "efficientnetB0":
-            weights = EfficientNet_B0_Weights.DEFAULT
-        elif args.model == "efficientnetB2":
-            weights = EfficientNet_B2_Weights.DEFAULT
-        transform = weights.transforms() # auto-transforms
+        transform = transforms.Compose([
+            transforms.RandomPerspective(distortion_scale=0.1, p=0.25, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.TrivialAugmentWide(num_magnitude_bins=21), # 31
+            transforms.CenterCrop(img_size),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+        # if args.model == "efficientnetB0":
+        #     weights = EfficientNet_B0_Weights.DEFAULT
+        # elif args.model == "efficientnetB2":
+        #     weights = EfficientNet_B2_Weights.DEFAULT
+        # transform = weights.transforms() # auto-transforms
     elif args.model == "vit_scratch":
         img_size = 224
         transform = transforms.Compose([
@@ -55,8 +58,18 @@ def main(args):
         ])
     elif args.model == "vitB16":
         img_size = 224
-        weights = ViT_B_16_Weights.IMAGENET1K_V1
-        transform = weights.transforms()
+        transform = transforms.Compose([
+            transforms.RandomPerspective(distortion_scale=0.1, p=0.25, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.TrivialAugmentWide(num_magnitude_bins=21), # 31
+            transforms.CenterCrop(img_size),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+        # weights = ViT_B_16_Weights.IMAGENET1K_V1
+        # transform = weights.transforms()
 
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
@@ -157,8 +170,6 @@ def main(args):
     ### PLOT RESULTS ###
     if args.plot:
         plot_loss_curves(results)
-
-    print("TRAINING PROCEDURE FINISHED.")
 
 
 def parse_args():
