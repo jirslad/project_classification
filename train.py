@@ -59,19 +59,21 @@ def main(args):
         ])
     elif args.model == "vitB16":
         img_size = 224
-        transform = transforms.Compose([
-            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
-            transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
-            transforms.CenterCrop(img_size),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                        std=[0.229, 0.224, 0.225])
-        ])
-        # weights = ViT_B_16_Weights.IMAGENET1K_V1
-        # transform = weights.transforms()
+        # transform = transforms.Compose([
+        #     transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+        #     transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
+        #     transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
+        #     transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
+        #     transforms.CenterCrop(img_size),
+        #     transforms.RandomHorizontalFlip(p=0.5),
+        #     transforms.ToTensor(),
+        #     transforms.Normalize(mean=[0.485, 0.456, 0.406],
+        #                 std=[0.229, 0.224, 0.225])
+        # ])
+        weights = ViT_B_16_Weights.IMAGENET1K_V1
+        transform = weights.transforms()
+
+    print("No data augmentation.")
 
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
@@ -95,7 +97,6 @@ def main(args):
 
     classes = train_dataloader.dataset.dataset.classes
 
-    print("Better data augmentation.")
     print(f"Dataset path: {dataset_path}.\n" \
           f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
           f"{len(classes)} classes, batch size is {batch_size}. \n" \
