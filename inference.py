@@ -24,8 +24,8 @@ def main(args):
 
     ### LOAD MODEL ###
     model_path = args.model_path
-    # model = create_EfficientNetB0(output_classes=3, freeze_features=False)
-    model = create_ViTB16(output_classes=3, freeze_features=False)
+    # model = create_EfficientNetB0(output_classes=args.output_classes, freeze_features=False)
+    model = create_ViTB16(output_classes=args.output_classes, freeze_features=False)
     model, class_names = load_model(model, model_path, device)
     model.to(device)
 
@@ -91,6 +91,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--imgs-path", type=str, required=True, help="Path to folder with images.")
     parser.add_argument("--model-path", type=str, required=True, help="Path to a '.pt' or '.pth' model with class names.")
+    parser.add_argument("--output-classes", type=int, default=3, help="Number of model's output classes.")
     # parser.add_argument("--model-arch", type=str, required=True, help="Model architecture. E.g. 'efficientnetB0'.")
     parser.add_argument("--rows", type=int, default=3, help="Number of images in a row on the plot with predictions")
     parser.add_argument("--columns", type=int, default=4, help="Number of images in a column on the plot with predictions")
