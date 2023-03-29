@@ -63,11 +63,11 @@ def main(args):
         img_size = 224
         transform = transforms.Compose([
             transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
-            transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
+            # transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
+            # transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
+            # transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
             transforms.CenterCrop(img_size),
-            transforms.RandomHorizontalFlip(p=0.5),
+            # transforms.RandomHorizontalFlip(p=0.5),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
@@ -156,8 +156,8 @@ def main(args):
         data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
     elif len(split_ratio) == 4:
         data_percent = int(round((split_ratio[0] / sum(split_ratio[:2])) * 100))
+    freeze = "_freeze" if args.freeze else ""
     if args.track:
-        freeze = "_freeze" if args.freeze else ""
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
                                model_name=f"{args.model}{freeze}",
                                num_epochs=f"{args.epochs}ep",
@@ -199,7 +199,7 @@ def main(args):
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = f"model_{args.model}{args.freeze}_{args.epochs}ep_{args.lr:.6f}lr_{data_percent}perc-data.pt"
+    model_name = f"model_{args.model}{freeze}_{args.epochs}ep_{args.lr:.6f}lr_{data_percent}perc-data.pt"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
