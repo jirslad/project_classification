@@ -1,10 +1,12 @@
 import torch
+from torch.optim import lr_scheduler
 from torchvision import transforms
 from torchvision.models import EfficientNet_B0_Weights, EfficientNet_B2_Weights, ViT_B_16_Weights
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 from pathlib import Path
 import argparse
+import matplotlib.pyplot as plt
 from typing import List
 
 import datasets
@@ -73,7 +75,7 @@ def main(args):
         # weights = ViT_B_16_Weights.IMAGENET1K_V1
         # transform = weights.transforms()
 
-    print("More data augmentation.")
+    # print("More data augmentation.")
 
     ### DATASET ###
     # dataset_path = Path("datasets/dtd/dtd")
@@ -97,8 +99,19 @@ def main(args):
 
     classes = train_dataloader.dataset.dataset.classes
 
+    # number of instances per class in training dataset
+    if args.plot:
+        labels = torch.empty(0, dtype=torch.long)
+        for _, targets in train_dataloader:
+            labels = torch.cat((labels, targets))
+        class_counts = torch.bincount(labels).numpy()
+        bins = torch.arange(len(classes)+1).numpy()-0.5
+        plt.hist(bins[:-1], bins, weights=class_counts)
+        plt.title("Training dataset class distribution.")
+        plt.show()
+
     print(f"Dataset path: {dataset_path}.\n" \
-          f"Dataset contains {len(train_dataloader.dataset.dataset)} images of " \
+          f"Training dataset contains {len(train_dataloader.dataset.dataset)} images of " \
           f"{len(classes)} classes, batch size is {batch_size}. \n" \
           f"DataLoaders have {len(train_dataloader)} training batches, {len(val_dataloader)} " \
           f"validation batches and {len(test_dataloader)} testing batches."
@@ -153,30 +166,46 @@ def main(args):
         writer = None
     
     ### TRAINING ###
+    # accuracy function
     accuracy_fn = multiclass_accuracy
+
+    # loss function
     if multilabel:
         loss_fn = torch.nn.BCEWithLogitsLoss()
     else:
         loss_fn = torch.nn.CrossEntropyLoss()
-    optim = torch.optim.Adam(params=model.parameters(),
+
+    # optimizer
+    # optim = torch.optim.Adam(params=model.parameters(),
+    #                          lr=args.lr,
+    #                          weight_decay=0.3)
+    optim = torch.optim.SGD(params=model.parameters(),
                              lr=args.lr,
+                             momentum=0.9,
                              weight_decay=0.3)
+    
+    # learning rate scheduler
+    scheduler = lr_scheduler.ChainedScheduler([
+        lr_scheduler.LinearLR(optim, start_factor=0.1, total_iters=args.epochs//5),
+        lr_scheduler.ExponentialLR(optim, gamma=0.9)
+    ])
+    # scheduler = None
+
+    # training
     torch.manual_seed(SEED)
     print(f"Training on {device}...")
     results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
-                           args.epochs, device, accuracy_fn, writer=writer)
+                           args.epochs, device, accuracy_fn, scheduler, writer=writer)
     
     ### SAVE MODEL ###
     save_folder = Path("models")
-    model_name = f"model_{args.model}{freeze}_{args.epochs}ep_{args.lr:.6f}lr_{data_percent}perc-data.pt"
+    model_name = f"model_{args.model}{args.freeze}_{args.epochs}ep_{args.lr:.6f}lr_{data_percent}perc-data.pt"
     save_model(model, classes, save_folder, model_name)
 
     ### PLOT RESULTS ###
     if args.plot:
         plot_loss_curves(results)
         
-
-
 
 def parse_args():
     parser = argparse.ArgumentParser()

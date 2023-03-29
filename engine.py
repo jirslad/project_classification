@@ -1,5 +1,6 @@
 ''' Functions for training, validation and testing '''
 import torch
+from torch.optim.lr_scheduler import _LRScheduler
 from time import time
 from torch.utils.tensorboard import SummaryWriter
 
@@ -55,6 +56,7 @@ def train(model: torch.nn.Module,
           epochs: int,
           device: torch.device,
           accuracy_fn,
+          lr_scheduler: _LRScheduler=None,     
           writer: SummaryWriter=None):
     """ Training procedure. 
     
@@ -83,16 +85,18 @@ def train(model: torch.nn.Module,
     dummy_tensor = torch.randn(imgs[0].shape)
     
     time_start = time()
-
     for epoch in range(epochs):
         train_loss, train_acc = train_step(model, train_dataloader, loss_fn,
             optimizer, device, accuracy_fn)
         val_loss, val_acc = val_step(model, val_dataloader, loss_fn, device, accuracy_fn)
+        lr = optimizer.param_groups[0]["lr"]
+        if lr_scheduler:
+            lr_scheduler.step()
 
         time_s = time() - time_start
         if epoch == 0:
-            print(f"Epoch | Train loss | Val loss | Train acc | Val acc | Time [s]")
-        print(f"{epoch:^5} |   {train_loss:.4f}   |  {val_loss:.4f}  |   {train_acc:.3f}   |  {val_acc:.3f}  |   {time_s:.0f}")
+            print(f"Epoch | Train loss | Val loss | Train acc | Val acc | Learn Rate | Time [s]")
+        print(f"{epoch:^5} |   {train_loss:.4f}   |  {val_loss:.4f}  |   {train_acc:.3f}   |  {val_acc:.3f}  |  {lr:.6f}  |   {time_s:.0f}")
 
         results["train_loss"].append(train_loss)
         results["val_loss"].append(val_loss)
