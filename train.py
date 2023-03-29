@@ -178,7 +178,7 @@ def main(args):
     # optimizer
     optim = torch.optim.Adam(params=model.parameters(),
                              lr=args.lr,
-                             weight_decay=0.3)
+                             weight_decay=0.2)
     # optim = torch.optim.SGD(params=model.parameters(),
     #                          lr=args.lr,
     #                          momentum=0.9,
