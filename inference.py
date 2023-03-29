@@ -74,7 +74,7 @@ def main(args):
             plt.axis(False)
 
     accuracy = 100 * correct_count / (len(img_paths))
-    print(f"Accuracy: {accuracy:.1f} % on {len(target_idxs)}")
+    print(f"Accuracy: {accuracy:.1f} % on {len(target_idxs)} images.")
     plt.suptitle(f"Label | Prediction & Probability |" +
                 f" Overall Accuracy = {accuracy:.1f} %")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
