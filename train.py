@@ -43,7 +43,7 @@ def main(args):
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                        std=[0.229, 0.224, 0.225])
+                                 std=[0.229, 0.224, 0.225])
         ])
         # if args.model == "efficientnetB0":
         #     weights = EfficientNet_B0_Weights.DEFAULT
@@ -68,7 +68,7 @@ def main(args):
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                        std=[0.229, 0.224, 0.225])
+                                 std=[0.229, 0.224, 0.225])
         ])
         # weights = ViT_B_16_Weights.IMAGENET1K_V1
         # transform = weights.transforms()
@@ -174,6 +174,8 @@ def main(args):
     ### PLOT RESULTS ###
     if args.plot:
         plot_loss_curves(results)
+        
+
 
 
 def parse_args():
