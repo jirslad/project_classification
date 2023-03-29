@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
-from typing import Dict
+from typing import Dict, List
+from torch import Tensor
+from torchmetrics import ConfusionMatrix
+from mlxtend.plotting import plot_confusion_matrix as confmat_plot
 
 def plot_loss_curves(results: Dict):
     """Plots training results: loss and accuracy for test and validation sets.
@@ -42,3 +45,28 @@ def plot_predictions(model,
     """
 
     pass
+
+
+def plot_confusion_matrix(class_names: List,
+                          pred_idxs: List,
+                          target_idxs: List,
+                          task: str="multiclass"):
+    """ Plots a confusion matrix.
+    
+    Args:
+        class_names (List): Class names as strings.
+        pred_idxs (List): Predicted class indexes as ints.
+        target_idxs (List): Target class indexes as ints.
+        task (str): Task for confusion matrix (default "multiclass").
+    """
+    confmat = ConfusionMatrix(num_classes=len(class_names), task=task)
+    confmat_tensor = confmat(preds=Tensor(pred_idxs),
+                            target=Tensor(target_idxs))
+    fig, ax = confmat_plot(
+        conf_mat=confmat_tensor.numpy(),
+        class_names=class_names,
+        figsize=(8, 6)
+    )
+    plt.title("Confusion Matrix")
+    plt.tight_layout()
+    plt.show()

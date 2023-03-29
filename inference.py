@@ -3,16 +3,15 @@ Also plots confusion matrix. """
 
 import torch
 from torchvision import transforms
-from torchmetrics import ConfusionMatrix
-from mlxtend.plotting import plot_confusion_matrix
 from pathlib import Path
-from models import create_EfficientNetB0, create_EfficientNetB2
+from models import create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
 import random
 import matplotlib.pyplot as plt
 from PIL import Image
 import argparse
 
 from utils import load_model
+from plotting import plot_confusion_matrix
 
 def main(args):
 
@@ -25,7 +24,8 @@ def main(args):
 
     ### LOAD MODEL ###
     model_path = args.model_path
-    model = create_EfficientNetB2(output_classes=3, freeze_features=False)
+    # model = create_EfficientNetB0(output_classes=3, freeze_features=False)
+    model = create_ViTB16(output_classes=3, freeze_features=False)
     model, class_names = load_model(model, model_path, device)
     model.to(device)
 
@@ -73,20 +73,18 @@ def main(args):
                 plt.title(title, fontsize=10, c="r")
             plt.axis(False)
 
-    plt.suptitle(f"Label | Prediction & Probability \n" +
-                f" Overall Accuracy = {100 * correct_count / (len(img_paths)):.1f} %")
-    plt.show()
+    accuracy = 100 * correct_count / (len(img_paths))
+    print(f"Accuracy: {accuracy:.1f} % on {len(target_idxs)}")
+    plt.suptitle(f"Label | Prediction & Probability |" +
+                f" Overall Accuracy = {accuracy:.1f} %")
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    # plt.show()
 
     ### PLOT CONFUSION MATRIX ###
-    confmat = ConfusionMatrix(num_classes=len(class_names), task="multiclass")
-    confmat_tensor = confmat(preds=torch.tensor(pred_idxs),
-                            target=torch.tensor(target_idxs))
-    fig, ax = plot_confusion_matrix(
-        conf_mat=confmat_tensor.numpy(),
-        class_names=class_names,
-        figsize=(8, 6)
-    )
-    plt.show()
+    plot_confusion_matrix(class_names=class_names,
+                          pred_idxs=pred_idxs,
+                          target_idxs=target_idxs,
+                          task="multiclass")
 
 
 def parse_args():
