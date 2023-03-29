@@ -176,17 +176,17 @@ def main(args):
         loss_fn = torch.nn.CrossEntropyLoss()
 
     # optimizer
-    # optim = torch.optim.Adam(params=model.parameters(),
-    #                          lr=args.lr,
-    #                          weight_decay=0.3)
-    optim = torch.optim.SGD(params=model.parameters(),
+    optim = torch.optim.Adam(params=model.parameters(),
                              lr=args.lr,
-                             momentum=0.9,
                              weight_decay=0.3)
+    # optim = torch.optim.SGD(params=model.parameters(),
+    #                          lr=args.lr,
+    #                          momentum=0.9,
+    #                          weight_decay=0.3)
     
     # learning rate scheduler
     scheduler = lr_scheduler.ChainedScheduler([
-        lr_scheduler.LinearLR(optim, start_factor=0.1, total_iters=args.epochs//5),
+        lr_scheduler.LinearLR(optim, start_factor=0.1, total_iters=args.epochs//8),
         lr_scheduler.ExponentialLR(optim, gamma=0.9)
     ])
     # scheduler = None
