@@ -176,7 +176,7 @@ def main(args):
         loss_fn = torch.nn.CrossEntropyLoss()
 
     # optimizer
-    weight_decay = 0.2 if args.freeze else 0.0
+    weight_decay = 0.05 if args.freeze else 0.0
     optim = torch.optim.Adam(params=model.parameters(),
                              lr=args.lr,
                              weight_decay=weight_decay)
