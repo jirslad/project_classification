@@ -176,13 +176,14 @@ def main(args):
         loss_fn = torch.nn.CrossEntropyLoss()
 
     # optimizer
+    weight_decay = 0.2 if args.freeze else 0.0
     optim = torch.optim.Adam(params=model.parameters(),
                              lr=args.lr,
-                             weight_decay=0.2)
+                             weight_decay=weight_decay)
     # optim = torch.optim.SGD(params=model.parameters(),
     #                          lr=args.lr,
     #                          momentum=0.9,
-    #                          weight_decay=0.3)
+    #                          weight_decay=weight_decay)
     
     # learning rate scheduler
     scheduler = lr_scheduler.ChainedScheduler([
