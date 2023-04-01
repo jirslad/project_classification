@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from typing import Dict, List
-from torch import Tensor
+import torch
 from torchmetrics import ConfusionMatrix
 from mlxtend.plotting import plot_confusion_matrix as confmat_plot
 
@@ -60,8 +60,8 @@ def plot_confusion_matrix(class_names: List,
         task (str): Task for confusion matrix (default "multiclass").
     """
     confmat = ConfusionMatrix(num_classes=len(class_names), task=task)
-    confmat_tensor = confmat(preds=Tensor(pred_idxs),
-                            target=Tensor(target_idxs))
+    confmat_tensor = confmat(preds=torch.Tensor(pred_idxs),
+                            target=torch.Tensor(target_idxs))
     fig, ax = confmat_plot(
         conf_mat=confmat_tensor.numpy(),
         class_names=class_names,
@@ -69,4 +69,21 @@ def plot_confusion_matrix(class_names: List,
     )
     plt.title("Confusion Matrix")
     plt.tight_layout()
+    plt.show()
+
+
+def plot_dataset_distribution(dataloader):
+    try:
+        classes = dataloader.dataset.classes
+    except:
+        classes = dataloader.dataset.dataset.classes
+    labels = torch.empty(0, dtype=torch.long)
+    for _, targets in dataloader:
+        labels = torch.cat((labels, targets))
+    class_counts = torch.bincount(labels).numpy()
+    bins = torch.arange(len(classes)+1).numpy()-0.5
+    plt.hist(bins[:-1], bins, weights=class_counts)
+    plt.title("Dataset class distribution.")
+    plt.xlabel("Class index")
+    plt.ylabel("Number of instances")
     plt.show()

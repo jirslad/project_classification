@@ -14,7 +14,7 @@ from models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2, create
 from vit import ViT
 import engine
 from utils import multiclass_accuracy, multilabel_accuracy, save_model, create_writer
-from plotting import plot_loss_curves
+from plotting import plot_loss_curves, plot_dataset_distribution
 
 SEED = 42
 NUM_WORKERS = 0 # os.cpu_count() lauches debugged script multiple times
@@ -101,14 +101,8 @@ def main(args):
 
     # number of instances per class in training dataset
     if args.plot:
-        labels = torch.empty(0, dtype=torch.long)
-        for _, targets in train_dataloader:
-            labels = torch.cat((labels, targets))
-        class_counts = torch.bincount(labels).numpy()
-        bins = torch.arange(len(classes)+1).numpy()-0.5
-        plt.hist(bins[:-1], bins, weights=class_counts)
-        plt.title("Training dataset class distribution.")
-        plt.show()
+        plot_dataset_distribution(train_dataloader)
+        plot_dataset_distribution(val_dataloader)
 
     print(f"Dataset path: {dataset_path}.\n" \
           f"Training dataset contains {len(train_dataloader.dataset.dataset)} images of " \
@@ -176,7 +170,7 @@ def main(args):
         loss_fn = torch.nn.CrossEntropyLoss()
 
     # optimizer
-    weight_decay = 0.0 if args.freeze else 0.0
+    weight_decay = 0.01 if args.freeze else 0.0
     optim = torch.optim.Adam(params=model.parameters(),
                              lr=args.lr,
                              weight_decay=weight_decay)
@@ -187,7 +181,7 @@ def main(args):
     
     # learning rate scheduler
     scheduler = lr_scheduler.ChainedScheduler([
-        lr_scheduler.LinearLR(optim, start_factor=0.025, total_iters=args.epochs//6),
+        lr_scheduler.LinearLR(optim, start_factor=0.025, total_iters=args.epochs//3),
         lr_scheduler.ExponentialLR(optim, gamma=0.9)
     ])
     # scheduler = None
