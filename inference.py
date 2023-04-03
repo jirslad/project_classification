@@ -24,8 +24,13 @@ def main(args):
 
     ### LOAD MODEL ###
     model_path = args.model_path
-    # model = create_EfficientNetB0(output_classes=args.output_classes, freeze_features=False)
-    model = create_ViTB16(output_classes=args.output_classes, freeze_features=False)
+    if "efficientnetb0" in model_path.lower():
+        model = create_EfficientNetB0(output_classes=args.output_classes, freeze_features=False)
+    elif "vitb16" in model_path.lower():
+        model = create_ViTB16(output_classes=args.output_classes, freeze_features=False)
+    else:
+        print("Could not detect model type from model path. Using default model type.")
+        model = create_EfficientNetB0(output_classes=args.output_classes, freeze_features=False)
     model, class_names = load_model(model, model_path, device)
     model.to(device)
 
