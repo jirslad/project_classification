@@ -13,7 +13,7 @@ import datasets
 from models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
 from vit import ViT
 import engine
-from utils import multiclass_accuracy, multilabel_accuracy, save_model, create_writer
+from utils import multiclass_accuracy, multilabel_accuracy, save_model, load_model, create_writer
 from plotting import plot_loss_curves, plot_dataset_distribution
 
 SEED = 42
@@ -140,6 +140,9 @@ def main(args):
         model = create_ViTB16(output_classes=len(classes),
                               freeze_features=args.freeze).to(device)
      
+    if args.model_path:
+        model, _ = load_model(model, args.model_path, device)
+
     if args.summary:                 
         summary(model,
                 input_size=[1, 3, img_size, img_size],
@@ -186,16 +189,19 @@ def main(args):
     ])
     # scheduler = None
 
+    # info for saving the model
+    model_name = f"model_{args.model}{freeze}_{data_percent}perc-data_{args.epochs}ep_{args.lr:.6f}lr.pt"
+    save_folder = Path("models")
+
     # training
     torch.manual_seed(SEED)
     print(f"Training on {device}...")
     results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
-                           args.epochs, device, accuracy_fn, scheduler, writer=writer)
+                           args.epochs, device, accuracy_fn, scheduler, writer=writer,
+                           checkpoint_saving=args.checkpoint, model_path=Path(save_folder, model_name))
     
     ### SAVE MODEL ###
-    save_folder = Path("models")
-    model_name = f"model_{args.model}{freeze}_{args.epochs}ep_{args.lr:.6f}lr_{data_percent}perc-data.pt"
-    save_model(model, classes, save_folder, model_name)
+    save_model(model, classes, save_folder, model_name, verbose=True)
 
     ### PLOT RESULTS ###
     if args.plot:
@@ -207,9 +213,11 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
+    parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
     parser.add_argument("--split-ratio", nargs="+", type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2).")
     parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnetB0", "efficientnetB2", "vit_scratch", "vitB16"])
-    parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
+    parser.add_argument("--model-path", type=str, help="Path to a .pt or .pth model to continue training on.")
+    parser.add_argument("--checkpoint", action="store_true", help="Save model after each epoch")
     parser.add_argument("--summary", action="store_true", help="Show model summary.")
     parser.add_argument("--track", action="store_true", help="Track model experiment.")
     parser.add_argument("--plot", action="store_true", help="Plot training results.")
