@@ -3,6 +3,8 @@ import torch
 from torch.optim.lr_scheduler import _LRScheduler
 from time import time
 from torch.utils.tensorboard import SummaryWriter
+from pathlib import Path
+from utils import save_model
 
 def train_step(model, dataloader, loss_fn, optim, device, accuracy_fn):
     
@@ -57,7 +59,9 @@ def train(model: torch.nn.Module,
           device: torch.device,
           accuracy_fn,
           lr_scheduler: _LRScheduler=None,     
-          writer: SummaryWriter=None):
+          writer: SummaryWriter=None,
+          checkpoint_saving: bool=False,
+          model_path: str=None):
     """ Training procedure. 
     
     Performs training of a PyTorch model with a training DataLoader using
@@ -116,6 +120,17 @@ def train(model: torch.nn.Module,
             # writer.add_graph(model=model,
             #                 input_to_model=dummy_tensor.to(device))
             writer.close()
+        
+        # Save checkpoint
+        if checkpoint_saving:
+            try:
+                class_names = train_dataloader.dataset.classes
+            except:
+                class_names = train_dataloader.dataset.dataset.classes
+            save_model(model=model,
+                       class_names=class_names,
+                       folder_path=Path(model_path).parent,
+                       model_name=Path(model_path).name)
 
     return results
 
