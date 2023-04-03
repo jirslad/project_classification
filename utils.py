@@ -20,6 +20,7 @@ def multiclass_accuracy(y, y_class_idxs):
     return (y == y_class_idxs).sum().item() / len(y)
 
 def multilabel_accuracy(y, y_logits):
+    """TODO"""
     return 999.99
 
 ### MODEL SAVING ###
@@ -27,7 +28,8 @@ def multilabel_accuracy(y, y_logits):
 def save_model(model:Module,
                class_names: List,
                folder_path:str,
-               model_name:str):
+               model_name:str,
+               verbose:bool=False):
     '''Saves dictionary with PyTorch model state_dict and class names into specific folder.
     
     Args:
@@ -43,13 +45,15 @@ def save_model(model:Module,
     assert model_name.endswith(".pth") or model_name.endswith(".pt"), "Model name must end with '.pth' or '.pt'."
     model_path = folder_path / model_name
 
-    print(f"Saving {model_path}.")
+    if verbose:
+        print(f"Saving {model_path}.")
 
     save_dict = {
         "state_dict": model.state_dict(),
         "class_names": class_names
     }
     save(obj=save_dict, f=model_path)
+
 
 def load_model(model:Module,
                model_path: str,
