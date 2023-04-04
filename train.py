@@ -184,8 +184,8 @@ def main(args):
     
     # learning rate scheduler
     scheduler = lr_scheduler.ChainedScheduler([
-        lr_scheduler.LinearLR(optim, start_factor=0.01, total_iters=args.epochs//4),
-        lr_scheduler.ExponentialLR(optim, gamma=0.8)
+        lr_scheduler.LinearLR(optim, start_factor=0.02, total_iters=args.epochs//4),
+        lr_scheduler.ExponentialLR(optim, gamma=0.9)
     ])
     # scheduler = None
 
