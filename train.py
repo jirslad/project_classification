@@ -20,9 +20,6 @@ SEED = 42
 NUM_WORKERS = 0 # os.cpu_count() lauches debugged script multiple times
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-### ARGUMENTS
-multilabel = False
-
 ### MAIN
 def main(args):
     
@@ -78,6 +75,7 @@ def main(args):
     # print("More data augmentation.")
 
     ### DATASET ###
+    # multilabel = True
     # dataset_path = Path("datasets/dtd/dtd")
     # dataset_path = Path("datasets/food-101")
     # dataset_path = Path("datasets/pizza_steak_sushi/train_test")
