@@ -4,7 +4,7 @@ from torch.optim.lr_scheduler import _LRScheduler
 from time import time
 from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
-from utils import save_model
+from .utils import save_model
 
 def train_step(model, dataloader, loss_fn, optim, device, accuracy_fn):
     

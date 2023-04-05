@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import argparse
 
-from utils import load_model
-from plotting import plot_confusion_matrix
+from utils.utils import load_model
+from utils.plotting import plot_confusion_matrix
 
 def main(args):
 

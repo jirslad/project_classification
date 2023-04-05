@@ -9,12 +9,12 @@ import argparse
 import matplotlib.pyplot as plt
 from typing import List
 
-import datasets
-from models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
-from vit import ViT
-import engine
-from utils import multiclass_accuracy, multilabel_accuracy, save_model, load_model, create_writer
-from plotting import plot_loss_curves, plot_dataset_distribution
+from utils.datasets import create_dataloaders
+from utils.models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
+from utils.vit import ViT
+from utils.engine import train
+from utils.utils import multiclass_accuracy, multilabel_accuracy, save_model, load_model, create_writer
+from utils.plotting import plot_loss_curves, plot_dataset_distribution
 
 SEED = 42
 NUM_WORKERS = 0 # os.cpu_count() lauches debugged script multiple times
@@ -75,7 +75,7 @@ def main(args):
     # print("More data augmentation.")
 
     ### DATASET ###
-    # multilabel = True
+    multilabel = False
     # dataset_path = Path("datasets/dtd/dtd")
     # dataset_path = Path("datasets/food-101")
     # dataset_path = Path("datasets/pizza_steak_sushi/train_test")
@@ -85,7 +85,7 @@ def main(args):
     split_ratio = args.split_ratio
     batch_size = args.batch
 
-    train_dataloader, val_dataloader, test_dataloader = datasets.create_dataloaders(
+    train_dataloader, val_dataloader, test_dataloader = create_dataloaders(
         dataset_dir=dataset_path,
         split_ratio=split_ratio,
         transform=transform,
@@ -194,9 +194,9 @@ def main(args):
     # training
     torch.manual_seed(SEED)
     print(f"Training on {device}...")
-    results = engine.train(model, train_dataloader, val_dataloader, loss_fn, optim,
-                           args.epochs, device, accuracy_fn, scheduler, writer=writer,
-                           checkpoint_saving=args.checkpoint, model_path=Path(save_folder, model_name))
+    results = train(model, train_dataloader, val_dataloader, loss_fn, optim,
+                    args.epochs, device, accuracy_fn, scheduler, writer=writer,
+                    checkpoint_saving=args.checkpoint, model_path=Path(save_folder, model_name))
     
     ### SAVE MODEL ###
     save_model(model, classes, save_folder, model_name, verbose=True)
