@@ -101,7 +101,7 @@ class DTDDataset(Dataset):
 
     def _str2multihot(self, label, num_classes):
         class_idxs = label.split(",")
+        class_idxs = [int(x) for x in class_idxs]
         label_vector = torch.zeros(num_classes, dtype=torch.float32)
-        for idx in class_idxs:
-            label_vector[int(idx)] = 1.
+        label_vector[class_idxs] = 1.
         return label_vector
