@@ -5,6 +5,7 @@ from torchvision.models import EfficientNet_B0_Weights, EfficientNet_B2_Weights,
 from torchinfo import summary
 # from torchmetrics.functional.classification import multilabel_accuracy
 from pathlib import Path
+import os
 import argparse
 import matplotlib.pyplot as plt
 from typing import List
@@ -17,7 +18,8 @@ from utils.utils import multiclass_accuracy, multilabel_accuracy, save_model, lo
 from utils.plotting import plot_loss_curves, plot_dataset_distribution
 
 SEED = 42
-NUM_WORKERS = 0 # os.cpu_count() lauches debugged script multiple times
+NUM_WORKERS = os.cpu_count() # os.cpu_count() lauches debugged script multiple times
+print(f"Num workers: {NUM_WORKERS}")
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 ### MAIN
