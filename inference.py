@@ -4,13 +4,13 @@ Also plots confusion matrix. """
 import torch
 from torchvision import transforms
 from pathlib import Path
-from models import create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
 import random
 import matplotlib.pyplot as plt
 from PIL import Image
 import argparse
 
 from utils.utils import load_model
+from utils.models import create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
 from utils.plotting import plot_confusion_matrix
 
 def main(args):
@@ -81,7 +81,7 @@ def main(args):
     accuracy = 100 * correct_count / (len(img_paths))
     print(f"Accuracy: {accuracy:.1f} % on {len(target_idxs)} images.")
     plt.suptitle(f"Label | Prediction & Probability |" +
-                f" Overall Accuracy = {accuracy:.1f} %")
+                 f" Overall Accuracy = {accuracy:.1f} %")
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     # plt.show()
 
