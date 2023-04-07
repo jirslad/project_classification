@@ -3,12 +3,12 @@ from torchvision import datasets
 from pathlib import Path
 import os
 import csv
-
-datasets_path = Path("datasets")
+from typing import List
+import shutil
 
 
 def DTD():
-    '''Prepares DTD dataset.    
+    '''Prepares DTD dataset for multi-label classification.    
     
     Downloads DTD dataset (sources below). Creates 'class_names.txt' with ordered class names.
     Also creates 'annotations.csv' with image paths and image labels separated by tab, one
@@ -72,6 +72,7 @@ def DTD():
     
     print("DTD dataset processed successfully.")
 
+
 def Food101():
     '''Prepares Food101 dataset.
     
@@ -84,18 +85,51 @@ def Food101():
 
     print("Food101 dataset processed successfully.")
 
+
+def FoodSubset(datasets_path:str,
+               target_classes:List,
+               split:List=["test", "train"]):
+    """ Prepares pizza_steak_sushi subset of Food-101 dataset.
+    """
+    if not Path(datasets_path / "food-101").exists():
+        print("Preparing Food101 dataset first.")
+        Food101()
+
+    imgs_folder = Path(datasets_path / "food-101" / "images")
+    metadata_folder = Path(datasets_path / "food-101" / "meta")
+    dataset_folder = Path(datasets_path / "pizza_steak_sushi")
+
+    if Path(dataset_folder / "train").exists():
+        print("Dataset has already been prepared.")
+        return
+    
+    for split in ["test", "train"]:
+        with open(metadata_folder / f"{split}.txt", "r") as f:
+            img_paths = [line.strip("\n") + ".jpg" for line in f.readlines() if line.split("/")[0] in target_classes]
+        for img_path in img_paths:
+            class_name = img_path.split("/")[0]
+            class_folder = dataset_folder / split / class_name
+            if not class_folder.is_dir():
+                class_folder.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(imgs_folder / img_path, class_folder)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--dataset", choices=["DTD", "Food101"])
+    parser.add_argument("--datasets-dir", type=str, help="Path to directory with datasets.")
+    parser.add_argument("--dataset", choices=["DTD", "Food101", "FoodSubset"])
 
     return parser.parse_args()
 
 
 if __name__ == "__main__":
+
     args = parse_args()
+    datasets_path = Path(args.datasets_dir)
 
     if args.dataset == "DTD":
         DTD()
-
-    if args.dataset == "Food101":
+    elif args.dataset == "Food101":
         Food101()
+    elif args.dataset == "FoodSubset":
+        FoodSubset(datasets_path, ["pizza", "steak", "sushi"], ["test", "train"])
