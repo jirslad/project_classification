@@ -43,7 +43,7 @@ def main(args):
             transforms.ToTensor(),
             imagenet_normalize
     ])
-    
+
     if args.model == "tinyvgg":
         img_size = 64
         train_transform = transforms.Compose([
@@ -183,8 +183,8 @@ def main(args):
     
     # learning rate scheduler
     scheduler = lr_scheduler.ChainedScheduler([
-        lr_scheduler.LinearLR(optim, start_factor=0.02, total_iters=args.epochs//4),
-        lr_scheduler.ExponentialLR(optim, gamma=0.9)
+        lr_scheduler.LinearLR(optim, start_factor=0.025, total_iters=args.epochs//4),
+        lr_scheduler.ExponentialLR(optim, gamma=0.8)
     ])
     # scheduler = None
 
