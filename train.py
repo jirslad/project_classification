@@ -24,55 +24,55 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 def main(args):
     
     ### TRANSFORM
+    img_size = 224
+    imagenet_normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                              std=[0.229, 0.224, 0.225])
+    augmented_resized_transform = transforms.Compose([
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
+            transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
+            transforms.CenterCrop(img_size),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ToTensor(),
+            imagenet_normalize
+    ])
+    test_resized_transform = transforms.Compose([
+            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.CenterCrop(img_size),
+            transforms.ToTensor(),
+            imagenet_normalize
+    ])
+    
     if args.model == "tinyvgg":
         img_size = 64
-        transform = transforms.Compose([
+        train_transform = transforms.Compose([
             transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC), 
             transforms.CenterCrop(img_size),
             transforms.ToTensor()
         ])
+        test_transform = train_transform
     elif "efficientnet" in args.model:
         img_size = 224
-        transform = transforms.Compose([
-            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
-            transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
-            transforms.CenterCrop(img_size),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])
-        ])
+        train_transform = augmented_resized_transform
+        test_transform = test_resized_transform
         # if args.model == "efficientnetB0":
         #     weights = EfficientNet_B0_Weights.DEFAULT
         # elif args.model == "efficientnetB2":
         #     weights = EfficientNet_B2_Weights.DEFAULT
-        # transform = weights.transforms() # auto-transforms
+        # train_transform = weights.transforms() # auto-transforms
+        # test_transform = train_transform
     elif args.model == "vit_scratch":
         img_size = 224
-        transform = transforms.Compose([
-            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.CenterCrop(img_size),
-            transforms.ToTensor()
-        ])
+        train_transform = augmented_resized_transform
+        test_transform = test_resized_transform
     elif args.model == "vitB16":
         img_size = 224
-        transform = transforms.Compose([
-            transforms.Resize(img_size+32, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomPerspective(distortion_scale=0.1, p=0.9, interpolation=transforms.InterpolationMode.BICUBIC),
-            transforms.RandomAffine(degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.9, 1.1)),
-            transforms.TrivialAugmentWide(num_magnitude_bins=31), # 31
-            transforms.CenterCrop(img_size),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])
-        ])
+        train_transform = augmented_resized_transform
+        test_transform = test_resized_transform
         # weights = ViT_B_16_Weights.IMAGENET1K_V1
-        # transform = weights.transforms()
-
-    # print("More data augmentation.")
+        # train_transform = weights.transforms()
+        # test_transform = train_transform
 
     ### DATASET ###
     multilabel = False
@@ -88,7 +88,8 @@ def main(args):
     train_dataloader, val_dataloader, test_dataloader = create_dataloaders(
         dataset_dir=dataset_path,
         split_ratio=split_ratio,
-        transform=transform,
+        train_transform=train_transform,
+        test_transform=test_transform,
         multilabel=multilabel,
         batch_size=batch_size,
         num_workers=NUM_WORKERS,
@@ -188,7 +189,7 @@ def main(args):
     # scheduler = None
 
     # info for saving the model
-    model_name = f"model_{args.model}{freeze}_{data_percent}perc-data_{args.epochs}ep_{args.lr:.6f}lr.pt"
+    model_name = f"{args.model}{freeze}_{data_percent}perc-data_{args.epochs}ep_{args.lr:.6f}lr.pt"
     save_folder = Path("models")
 
     # training

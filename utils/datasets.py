@@ -13,41 +13,53 @@ NUM_WORKERS = 0 #os.cpu_count()
 
 def create_dataloaders(dataset_dir: str,
     split_ratio: List,
-    transform: transforms.Compose,
+    train_transform: transforms.Compose,
+    test_transform: transforms.Compose,
     batch_size: int,
     multilabel: bool=False,
     num_workers: int=NUM_WORKERS,
     seed=SEED
 ):
-    """Creates train, val and test dataloaders from random split of DTD dataset."""
+    """Creates train, val and test dataloaders from random split of DTD dataset.
+    
+    Args:
+        dataset_dir (str): path to data relative to `train.py`. Dataset creation must be incorporated
+            into this function first.
+        split_ratio (list): typically list of 3 floats summing to 1, which represent train/val/test splits.
+        transform (torchvision.transforms.Compose):     
+    """
 
-    # TODO: use faster image loading (https://discuss.pytorch.org/t/how-to-speed-up-the-data-loader/13740/3)
+    # TODO: try faster image loading (https://discuss.pytorch.org/t/how-to-speed-up-the-data-loader/13740/3)
     if dataset_dir.name == "dtd":
-        dataset = DTDDataset(Path(dataset_dir), transform, multilabel)
-    elif dataset_dir.name == "food-101": # TODO: use test split for testing
-        dataset = datasets.Food101(root=Path(dataset_dir).parent,
-                                   split="train",
-                                   transform=transform,
-                                   download=False)
+        train_dataset = DTDDataset(dataset_path=Path(dataset_dir),
+                             transform=train_transform,
+                             multilabel=multilabel) # TODO: separete transforms for train and val/test
+    elif dataset_dir.name == "food-101":
+        train_dataset = datasets.Food101(root=Path(dataset_dir).parent,
+                                         split="train",
+                                         transform=train_transform,
+                                         download=False)
         val_dataset = datasets.Food101(root=Path(dataset_dir).parent,
-                                        split="test",
-                                        transform=transform,
-                                        download=False)
-    elif dataset_dir.parent.name == "pizza_steak_sushi":
-        dataset = datasets.ImageFolder(root=dataset_dir,
-                                       transform=transform)
+                                       split="test",
+                                       transform=train_transform,
+                                       download=False)
+    elif dataset_dir.name == "pizza_steak_sushi":
+        train_dataset = datasets.ImageFolder(root=Path(dataset_dir) / "train",
+                                             transform=train_transform)
+        val_dataset = datasets.ImageFolder(root=Path(dataset_dir) / "test",
+                                            transform=test_transform)
     else:
-        print("Wrong dataset path, dataset does not exist.")
+        assert False, "Wrong dataset path, dataset does not exist."
 
     if len(split_ratio) == 3:
         train_dataset, val_dataset, test_dataset = random_split(
-            dataset, split_ratio, generator=torch.Generator().manual_seed(seed)
+            train_dataset, split_ratio, generator=torch.Generator().manual_seed(seed)
         )
     elif len(split_ratio) == 4:
-        train_dataset, test_dataset = random_split(
-            dataset, split_ratio[:2], generator=torch.Generator().manual_seed(seed)
+        train_dataset, _ = random_split(
+            train_dataset, split_ratio[:2], generator=torch.Generator().manual_seed(seed)
         )
-        val_dataset, _ = random_split(
+        val_dataset, test_dataset = random_split(
             val_dataset, split_ratio[2:], generator=torch.Generator().manual_seed(seed)
         )
 
@@ -66,7 +78,10 @@ def create_dataloaders(dataset_dir: str,
 
 class DTDDataset(Dataset):
     """DTD dataset for single-label or multi-label multi-class classification"""
-    def __init__(self, dataset_path: Path, transform: transforms.Compose=None, multilabel=False):
+    def __init__(self,
+                 dataset_path: Path,
+                 transform: transforms.Compose=None,
+                 multilabel=False):
 
         with open(dataset_path / "class_names.txt", encoding="utf-8") as f:
             self.classes = f.read().split(" ")
