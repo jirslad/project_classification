@@ -41,7 +41,7 @@ def create_dataloaders(dataset_dir: str,
                                          download=False)
         val_dataset = datasets.Food101(root=Path(dataset_dir).parent,
                                        split="test",
-                                       transform=train_transform,
+                                       transform=test_transform,
                                        download=False)
     elif dataset_dir.name == "pizza_steak_sushi":
         train_dataset = datasets.ImageFolder(root=Path(dataset_dir) / "train",
