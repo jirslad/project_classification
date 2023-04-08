@@ -101,8 +101,8 @@ def main(args):
 
     # number of instances per class in training dataset
     if args.plot:
-        plot_dataset_distribution(train_dataloader, "Training")
-        plot_dataset_distribution(val_dataloader, "Validation")
+        plot_dataset_distribution(train_dataloader, split="Training")
+        plot_dataset_distribution(val_dataloader, split="Validation")
 
     print(f"Dataset path: {dataset_path}.\n" \
           f"Training dataset contains {len(train_dataloader.dataset.dataset)} images of " \
