@@ -72,7 +72,7 @@ def plot_confusion_matrix(class_names: List,
     plt.show()
 
 
-def plot_dataset_distribution(dataloader):
+def plot_dataset_distribution(dataloader, split=""):
     try:
         classes = dataloader.dataset.classes
     except:
@@ -83,7 +83,7 @@ def plot_dataset_distribution(dataloader):
     class_counts = torch.bincount(labels).numpy()
     bins = torch.arange(len(classes)+1).numpy()-0.5
     plt.hist(bins[:-1], bins, weights=class_counts)
-    plt.title("Dataset class distribution.")
+    plt.title(f"{split} Dataset class distribution.")
     plt.xlabel("Class index")
     plt.ylabel("Number of instances")
     plt.show()

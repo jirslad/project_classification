@@ -19,7 +19,6 @@ from utils.plotting import plot_loss_curves, plot_dataset_distribution
 
 SEED = 42
 NUM_WORKERS = os.cpu_count() # os.cpu_count() lauches debugged script multiple times
-print(f"Num workers: {NUM_WORKERS}")
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 ### MAIN
@@ -102,8 +101,8 @@ def main(args):
 
     # number of instances per class in training dataset
     if args.plot:
-        plot_dataset_distribution(train_dataloader)
-        plot_dataset_distribution(val_dataloader)
+        plot_dataset_distribution(train_dataloader, "Training")
+        plot_dataset_distribution(val_dataloader, "Validation")
 
     print(f"Dataset path: {dataset_path}.\n" \
           f"Training dataset contains {len(train_dataloader.dataset.dataset)} images of " \
