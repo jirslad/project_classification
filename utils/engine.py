@@ -1,8 +1,6 @@
 ''' Functions for training, validation and testing '''
 import torch
-from torch.optim.lr_scheduler import _LRScheduler
 from time import time
-from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
 from .utils import save_model
 
@@ -58,8 +56,8 @@ def train(model: torch.nn.Module,
           epochs: int,
           device: torch.device,
           accuracy_fn,
-          lr_scheduler: _LRScheduler=None,     
-          writer: SummaryWriter=None,
+          lr_scheduler: torch.utils.tensorboard._LRScheduler=None,     
+          writer: torch.utils.tensorboard.SummaryWriter=None,
           checkpoint_saving: bool=False,
           model_path: str=None):
     """ Training procedure. 
@@ -70,11 +68,25 @@ def train(model: torch.nn.Module,
     Records ongoing losses and accuracies.
     
     Args:
-      model:
-      ...
+        model (torch.nn.Module): Model to train.
+        train_dataloader (torch.utils.data.DataLoader): Training dataloader.
+        val_dataloader (torch.utils.data.DataLoader): Validation dataloader.
+        loss_fn (torch.nn.Module): Loss function.
+        optimizer (torch.optim.Optimizer): Optimizer.
+        epochs (int): Number of training epochs.
+        device (torch.device): Device (e.g. "cuda", "", "cpu")
+        accuracy_fn (function): Accuracy function for classification.
+        lr_scheduler (torch.utils.tensorboard._LRScheduler): Learning rate scheduler.   
+        writer (torch.utils.tensorboard.SummaryWriter): Tensorboard writer.
+        checkpoint_saving (bool): Flag to save model after every epoch.
+        model_path (str): Path to a model to continue training on.
 
     Returns:
-      A dictionary with training results.
+        results (Dict): a dictionary with lists of values, e.g.
+            {"train_loss": [1.04, 0.82, 0.34],
+             "val_loss": [1.14, 0.92, 0.54],
+             "train_acc": [0.38, 0.59, 0.83],
+             "val_acc": [0.33, 0.49, 0.75]}
     """
 
     results = {

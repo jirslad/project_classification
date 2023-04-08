@@ -72,7 +72,14 @@ def plot_confusion_matrix(class_names: List,
     plt.show()
 
 
-def plot_dataset_distribution(dataloader, split=""):
+def plot_dataset_distribution(dataloader: torch.utils.data.DataLoader,
+                              split:str=""):
+    """ Plots class distribution of a dataset.
+    
+    Args:
+        dataloader (torch DataLoader): DataLoader of the dataset.
+        split (str): Name of the dataset for plot's title.
+    """
     try:
         classes = dataloader.dataset.classes
     except:
@@ -82,6 +89,7 @@ def plot_dataset_distribution(dataloader, split=""):
         labels = torch.cat((labels, targets))
     class_counts = torch.bincount(labels).numpy()
     bins = torch.arange(len(classes)+1).numpy()-0.5
+    plt.figure()
     plt.hist(bins[:-1], bins, weights=class_counts)
     plt.title(f"{split} Dataset class distribution.")
     plt.xlabel("Class index")

@@ -1,4 +1,7 @@
 """Vision Transformer from scratch
+
+https://arxiv.org/abs/2010.11929
+https://www.learnpytorch.io/08_pytorch_paper_replicating/
 """
 
 import torch
@@ -108,7 +111,6 @@ class ViT(nn.Module):
                                                            requires_grad=True))
         self.embedding_dropout = nn.Dropout(embedding_dropout)
         # transformer encoder
-        # transformer_encoder_block = 
         self.transformer_encoder = nn.Sequential(
             *[TransformerEncoderBlock(embedding_dimension,
                                       msa_heads,
@@ -134,31 +136,3 @@ class ViT(nn.Module):
         x = self.classifier(x[:,0])
         return x
     
-
-
-# ### DEBUGGING CODE
-# img = torch.randn((3, 224, 224))
-# img_batch = img.unsqueeze(dim=0)
-# model = ViT(img_height=224,
-#             img_width=224,
-#             img_channels=3,
-#             patch_size=16,
-#             embedding_dimension=768,
-#             encoder_layers=12,
-#             msa_heads=12,
-#             embedding_dropout=0.1,
-#             msa_dropout=0.0,
-#             mlp_dropout=0.1,
-#             mlp_units=3072,
-#             out_classes=3)
-# from torchinfo import summary
-# summary(model=model, 
-#         input_size=(32, 3, 224, 224), # (batch_size, color_channels, height, width)
-#         # col_names=["input_size"], # uncomment for smaller output
-#         col_names=["input_size", "output_size", "num_params", "trainable"],
-#         col_width=20,
-#         row_settings=["var_names"]
-# )
-# logits = model(img_batch)
-# print(logits)
-# print(f"Input shape: {img_batch.shape}, output shape: {logits.shape}")

@@ -18,7 +18,7 @@ def create_dataloaders(dataset_dir: str,
     batch_size: int,
     multilabel: bool=False,
     num_workers: int=NUM_WORKERS,
-    seed=SEED
+    seed: int=SEED
 ):
     """Creates train, val and test dataloaders from random split of DTD dataset.
     
@@ -26,7 +26,12 @@ def create_dataloaders(dataset_dir: str,
         dataset_dir (str): path to data relative to `train.py`. Dataset creation must be incorporated
             into this function first.
         split_ratio (list): typically list of 3 floats summing to 1, which represent train/val/test splits.
-        transform (torchvision.transforms.Compose):     
+        train_transform (torchvision.transforms.Compose): training transforms.
+        val_transform (torchvision.transforms.Compose): validation transforms.    
+        batch_size (int): number of images in a batch.
+        multilabel (bool): flag to use multilabel dataset (if aplicable).
+        num_workers (int): number of CPU workers to load images from the dataloaders.
+        seed (int): RNG seed.
     """
 
     # TODO: try faster image loading (https://discuss.pytorch.org/t/how-to-speed-up-the-data-loader/13740/3)

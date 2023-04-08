@@ -19,10 +19,6 @@ def multiclass_accuracy(y, y_class_idxs):
     '''Returns accuracy in range [0, 1]'''
     return (y == y_class_idxs).sum().item() / len(y)
 
-def multilabel_accuracy(y, y_logits):
-    """TODO"""
-    return 999.99
-
 ### MODEL SAVING ###
 
 def save_model(model:Module,
@@ -37,6 +33,7 @@ def save_model(model:Module,
         class_names: List of strings of class names.
         folder_path: Path to a folder to save the model into.
         model_name: Name of the model with ".pt" or ".pth file extension".
+        verbose (bool): Whether Print model path after saving
     '''
 
     folder_path = Path(folder_path)
@@ -57,17 +54,17 @@ def save_model(model:Module,
 
 def load_model(model:Module,
                model_path: str,
-               device: str) -> Module:
+               device: str = "") -> Module:
     """Loads PyTorch Module model state_dict and assigns it to a model. Also loads class names.
     
     Args:
         model: Empty PyTorch Module model.
         model_path: Path to model parameters (".pt" or ".pth" file).
+        device: torch.cuda device ("cpu" or "cuda").
     
     Returns:
         model: PyTorch Module model with trained state_dict.
         class_names: List of class names.
-        device: torch.cuda device ("cpu" or "cuda").
     """
 
     assert str(model_path).endswith(".pth") or str(model_path).endswith(".pt"), \

@@ -4,7 +4,7 @@ from torchvision.models import (efficientnet_b0, EfficientNet_B0_Weights,
                                 vit_b_16, ViT_B_16_Weights)
 
 class TinyVGG(nn.Module):
-    
+    """ TinyVGG model from scratch."""
     def __init__(self, input_channels:int, hidden_channels:int, output_classes:int):
         super().__init__()
 
