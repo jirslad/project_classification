@@ -56,7 +56,7 @@ def train(model: torch.nn.Module,
           epochs: int,
           device: torch.device,
           accuracy_fn,
-          lr_scheduler: torch.utils.tensorboard._LRScheduler=None,     
+          lr_scheduler: torch.optim.lr_scheduler._LRScheduler=None,     
           writer: torch.utils.tensorboard.SummaryWriter=None,
           checkpoint_saving: bool=False,
           model_path: str=None):
@@ -76,7 +76,7 @@ def train(model: torch.nn.Module,
         epochs (int): Number of training epochs.
         device (torch.device): Device (e.g. "cuda", "", "cpu")
         accuracy_fn (function): Accuracy function for classification.
-        lr_scheduler (torch.utils.tensorboard._LRScheduler): Learning rate scheduler.   
+        lr_scheduler (torch.optim.lr_scheduler._LRScheduler): Learning rate scheduler.   
         writer (torch.utils.tensorboard.SummaryWriter): Tensorboard writer.
         checkpoint_saving (bool): Flag to save model after every epoch.
         model_path (str): Path to a model to continue training on.
