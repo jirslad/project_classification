@@ -56,16 +56,18 @@ def create_dataloaders(dataset_dir: str,
     else:
         assert False, "Wrong dataset path, dataset does not exist."
 
+    test_dataset = val_dataset
+
     if len(split_ratio) == 3:
         train_dataset, val_dataset, test_dataset = random_split(
             train_dataset, split_ratio, generator=torch.Generator().manual_seed(seed)
         )
-    elif len(split_ratio) == 4:
+    elif len(split_ratio) == 2:
         train_dataset, _ = random_split(
-            train_dataset, split_ratio[:2], generator=torch.Generator().manual_seed(seed)
+            train_dataset, [split_ratio[0], 1 - split_ratio[0]], generator=torch.Generator().manual_seed(seed)
         )
         val_dataset, test_dataset = random_split(
-            val_dataset, split_ratio[2:], generator=torch.Generator().manual_seed(seed)
+            val_dataset, [split_ratio[1], 1 - split_ratio[1]], generator=torch.Generator().manual_seed(seed)
         )
 
     train_loader = DataLoader(train_dataset, batch_size, shuffle=True,

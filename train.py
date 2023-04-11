@@ -7,14 +7,13 @@ from torchinfo import summary
 from pathlib import Path
 import os
 import argparse
-import matplotlib.pyplot as plt
 from typing import List
 
 from utils.datasets import create_dataloaders
 from utils.models import TinyVGG, create_EfficientNetB0, create_EfficientNetB2, create_ViTB16
 from utils.vit import ViT
 from utils.engine import train
-from utils.utils import multiclass_accuracy, multilabel_accuracy, save_model, load_model, create_writer
+from utils.utils import multiclass_accuracy, save_model, load_model, create_writer
 from utils.plotting import plot_loss_curves, plot_dataset_distribution
 
 SEED = 42
@@ -151,8 +150,8 @@ def main(args):
     ### EXPERIMENT TRACKING
     if len(split_ratio) == 3:
         data_percent = int(round((split_ratio[0] / sum(split_ratio)) * 100))
-    elif len(split_ratio) == 4:
-        data_percent = int(round((split_ratio[0] / sum(split_ratio[:2])) * 100))
+    elif len(split_ratio) == 2:
+        data_percent = int(round(split_ratio[0] * 100))
     freeze = "_freeze" if args.freeze else ""
     if args.track:
         writer = create_writer(experiment_name=f"data_{data_percent}_percent",
