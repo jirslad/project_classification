@@ -58,12 +58,12 @@ def create_dataloaders(dataset_dir: str,
 
     test_dataset = val_dataset
 
-    assert len(split_ratio) > 3, "Split ratio must contain 2 or 3 numbers."
+    assert 1 < len(split_ratio) < 4, "Split ratio must contain 2 or 3 numbers."
     if len(split_ratio) == 3:
         train_dataset, val_dataset, test_dataset = random_split(
             train_dataset, split_ratio, generator=torch.Generator().manual_seed(seed)
         )
-    elif len(split_ratio) == 2 and split_ratio[0] < 1.0:
+    elif len(split_ratio) == 2 and split_ratio[0] < 0.9999:
         train_dataset, _ = random_split(
             train_dataset, [split_ratio[0], 1 - split_ratio[0]], generator=torch.Generator().manual_seed(seed)
         )

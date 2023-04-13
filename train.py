@@ -82,7 +82,7 @@ def main(args):
     # dataset_path = Path("datasets/pizza_steak_sushi/all")
     dataset_path = Path(args.data_path)
     
-    split_ratio = args.split_ratio
+    split_ratio = float(args.split_ratio)
     batch_size = args.batch
 
     train_dataloader, val_dataloader, test_dataloader = create_dataloaders(
