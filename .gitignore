@@ -1,9 +1,11 @@
 datasets/
 yolov5/
 literature/
+scripts/
 runs/
 old_runs/
 __pycache__/
+.vscode/
 
 *.pt
 *.pth
