@@ -96,7 +96,10 @@ def main(args):
         seed=SEED
     )
 
-    classes = train_dataloader.dataset.dataset.classes
+    try:
+        class_names = train_dataloader.dataset.classes
+    except:
+        class_names = train_dataloader.dataset.dataset.classes
 
     # number of instances per class in training dataset
     if args.plot:
