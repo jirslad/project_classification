@@ -8,7 +8,7 @@ from pathlib import Path
 import csv
 
 SEED = 42
-NUM_WORKERS = 0 #os.cpu_count()
+NUM_WORKERS = os.cpu_count()
 
 
 def create_dataloaders(dataset_dir: str,
