@@ -65,7 +65,7 @@ def plot_confusion_matrix(class_names: List,
     fig, ax = confmat_plot(
         conf_mat=confmat_tensor.numpy(),
         class_names=class_names,
-        figsize=(8, 6)
+        figsize=(16, 13)
     )
     plt.title("Confusion Matrix")
     plt.tight_layout()
