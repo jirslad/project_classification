@@ -63,7 +63,7 @@ def create_dataloaders(dataset_dir: str,
         train_dataset, val_dataset, test_dataset = random_split(
             train_dataset, split_ratio, generator=torch.Generator().manual_seed(seed)
         )
-    elif len(split_ratio) == 2 and split_ratio[0] < 0.9999:
+    elif len(split_ratio) == 2:
         train_dataset, _ = random_split(
             train_dataset, [split_ratio[0], 1 - split_ratio[0]], generator=torch.Generator().manual_seed(seed)
         )
