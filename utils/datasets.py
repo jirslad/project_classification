@@ -56,8 +56,13 @@ def create_dataloaders(dataset_dir: str,
     else:
         assert False, "Wrong dataset path, dataset does not exist."
 
-    test_dataset = val_dataset
-
+    # split dataset
+    # TODO: idea to choose only certain classes https://discuss.pytorch.org/t/using-data-subsets/109318/2
+    # classes = torch.tensor([0, 1, 5, 6]) # class indexes
+    # sample_indices = torch.tensor(train_dataset.targets).unsqueeze(dim=1).eq(classes).any(dim=1).nonzero().squeeze()
+    # train_dataset = torch.utils.data.Subset(train_dataset, sample_indices)
+    # TODO: use Subset() with indices[::len(classes)] instead of random_split() to obtain uniform distribution 
+    
     assert 1 < len(split_ratio) < 4, "Split ratio must contain 2 or 3 numbers."
     if len(split_ratio) == 3:
         train_dataset, val_dataset, test_dataset = random_split(
