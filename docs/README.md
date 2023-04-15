@@ -1,5 +1,5 @@
 # Image Classification with PyTorch
-Scalable general purpose framework for my personal use.
+Scalable general-purpose framework designed for my personal use.
 
 ## Setup
 Minimal requirements for a fresh Miniconda environment:
@@ -31,7 +31,16 @@ python inference.py --imgs-path datasets/pizza_steak_sushi/custom
 
 ## Experiments with Food-101 dataset
 
-| Model          | Pretrained (ImageNet) | Data | Val loss | Vall acc |  
-|----------------|---------|--------|----------|---|
-| ViT16          | yes     | food3   | 0.5  | 95       |
-| EfficientNetB0 | yes     | food101 | 0.7  | 82       |
+All models use pretrained weights on ImageNet available in torchvision. 
+
+Table below reports validation loss, top 1 accuracy of validation and test sets.
+Test set contains in total 45 images of pizza, steak and sushi from Google Images.
+
+| Pretrained model | Dataset               | Epochs | LR   | Val loss | Val acc | Test acc | 
+|------------------|-----------------------|--------|------|----------|---------|----------|
+| EfficientNetB0   | Food-101 (3 classes)  | 10     | 5e-4 | 0.508    | 0.821   | 0.611    |
+| ViT16            | Food-101 (3 classes)  | 5      | 2e-5 | 0.555    | 0.952   | 0.871    |
+| EfficientNetB0   | Food-101              | 10     | 5e-4 | 0.508    | 0.854   | 0.867    |
+| ViT16            | Food-101              | 10     | 5e-4 | 0.555    | 0.952   | 0.871    |
+
+![Alt text](/docs/imgs/food3_v3_effB0.png?raw=true "EfficientNetB0 - Food-101 (3 classes)")
