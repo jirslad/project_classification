@@ -1,5 +1,5 @@
 # Image Classification with PyTorch
-Repository designed to experiment with PyTorch models on image classification tasks.
+Personal repository designed to experiment with PyTorch models on image classification tasks. The purpose of its creation was to practice knowledge from [Daniel's PyTorch course](https://www.learnpytorch.io/).
 
 ## Setup
 Minimal requirements for a fresh Miniconda environment with python>=3.8:
@@ -10,7 +10,9 @@ pip install matplotlib torchmetrics torchinfo mlxtend
 
 ## Curently supported datasets
 Food-101: multi-class single-label classification
+
 DTD: multi-class single-label classification
+
      multi-class multi-label classification (not finished yet)
 
 ## Usage
@@ -48,11 +50,11 @@ Test set contains in total 45 images of pizza, steak and sushi from Google Image
 | 1     | EfficientNetB0   | Food-101 (3 classes)  | 10     | 5e-4 | 0.052    | 0.992   | 0.956    |
 | 2     | ViT16            | Food-101 (3 classes)  | 5      | 2e-5 | 0.042    | 0.990   | 0.956    |
 | 3     | EfficientNetB0   | Food-101              | 10     | 3e-4 | 0.508    | 0.864   | 0.867    |
-| 4     | ViT16            | Food-101              | 6      | 8e-5 | 0.652    | 0.818   | 0.???    |
-
-Experiment #3 - test results:
-![Alt text](/docs/imgs/food3_v3_effB0.png?raw=true "EfficientNetB0 - Food-101 (3 classes)")
+| 4     | ViT16            | Food-101              | 6      | 5e-5 | 0.511    | 0.857   | 0.???    |
 
 ### Example Colab notebook for experiment #3
-TODO: add the notebook to GitHub and change URL here.
+TODO: add a new notebook to GitHub and change URL here. Copy individual cells into the new notebook, so that no history is present.
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jirslad/project_classification/blob/main/training_notebook.ipynb)
+
+### Test results for experiment #3
+![Alt text](/docs/imgs/food3_v3_effB0.png?raw=true "EfficientNetB0 - Food-101 (3 classes)")
