@@ -76,12 +76,7 @@ def main(args):
 
     ### DATASET ###
     multilabel = False
-    # dataset_path = Path("datasets/dtd/dtd")
-    # dataset_path = Path("datasets/food-101")
-    # dataset_path = Path("datasets/pizza_steak_sushi/train_test")
-    # dataset_path = Path("datasets/pizza_steak_sushi/all")
     dataset_path = Path(args.data_path)
-    
     split_ratio = args.split_ratio
     batch_size = args.batch
 
@@ -197,7 +192,7 @@ def main(args):
     print(f"Training on {device}...")
     results = train(model, train_dataloader, val_dataloader, loss_fn, optim,
                     args.epochs, device, accuracy_fn, scheduler, writer=writer,
-                    checkpoint_saving=args.checkpoint, model_path=Path(save_folder, model_name))
+                    checkpoint_path=args.checkpoint_path, model_path=Path(save_folder, model_name))
     
     ### SAVE MODEL ###
     save_model(model, classes, save_folder, model_name, verbose=True)
@@ -209,28 +204,19 @@ def main(args):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=100)
+    parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--lr", "--learning-rate", type=float, default=0.001)
     parser.add_argument("--batch", type=int, default=32)
     parser.add_argument("--data-path", type=str, required=True, help="Path to train and val dataset.")
     parser.add_argument("--split-ratio", nargs="+", type=float, help="Ratios of train, val, test dataset split (e.g. 0.6 0.2 0.2).")
     parser.add_argument("--model", type=str, default="tinyvgg", choices=["tinyvgg", "efficientnetB0", "efficientnetB2", "vit_scratch", "vitB16"])
     parser.add_argument("--model-path", type=str, help="Path to a .pt or .pth model to continue training on.")
-    parser.add_argument("--checkpoint", action="store_true", help="Save model after each epoch")
+    parser.add_argument("--checkpoint-path", type=str, default="", help="Path to folder to save model checkpoint to.")
     parser.add_argument("--summary", action="store_true", help="Show model summary.")
     parser.add_argument("--track", action="store_true", help="Track model experiment.")
     parser.add_argument("--plot", action="store_true", help="Plot training results.")
     parser.add_argument("--freeze", action="store_true", help="Freeze feature extractor.")
     return parser.parse_args()
-
-# arguments for debugging
-# arguments = [
-#     '--epochs', '20',
-#     '--lr', '0.001',
-#     '--batch', '32',
-#     '--split-ratio', '0.1', '0.1', '0.8',
-#     '--model', 'efficientnet'
-# ]
 
 
 if __name__ == "__main__":

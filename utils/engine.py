@@ -58,7 +58,7 @@ def train(model: torch.nn.Module,
           accuracy_fn,
           lr_scheduler: torch.optim.lr_scheduler._LRScheduler=None,     
           writer: torch.utils.tensorboard.SummaryWriter=None,
-          checkpoint_saving: bool=False,
+          checkpoint_path: str="",
           model_path: str=None):
     """ Training procedure. 
     
@@ -134,14 +134,14 @@ def train(model: torch.nn.Module,
             writer.close()
         
         # Save checkpoint
-        if checkpoint_saving:
+        if checkpoint_path != "":
             try:
                 class_names = train_dataloader.dataset.classes
             except:
                 class_names = train_dataloader.dataset.dataset.classes
             save_model(model=model,
                        class_names=class_names,
-                       folder_path=Path(model_path).parent,
+                       folder_path=Path(checkpoint_path),
                        model_name=Path(model_path).name)
 
     return results
