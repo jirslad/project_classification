@@ -89,7 +89,12 @@ def Food101():
 def FoodSubset(datasets_path:str,
                target_classes:List,
                split:List=["test", "train"]):
-    """ Prepares pizza_steak_sushi subset of Food-101 dataset.
+    """ Prepares subset of Food-101 dataset with specified classes.
+
+    Args:
+        datasets_path (str): path to folder with datasets.
+        target_classes (List of strings): classes to include in the subset.
+        split (List of strings): splits to include in the subset (test, train).
     """
     if not Path(datasets_path / "food-101").exists():
         print("Preparing Food101 dataset first.")
