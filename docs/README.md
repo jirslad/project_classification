@@ -59,7 +59,7 @@ Test set contains in total 45 images of pizza, steak and sushi from Google Image
 | 4     | ViT16            | Food-101              | 5      | 6e-5 | 0.517    | 0.857   | 0.844    |
 
 ### Example Colab notebook for experiment #3
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jirslad/project_classification/blob/main/training_notebook.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jirslad/project_classification/blob/main/demo_training_notebook.ipynb)
 
 ### Test results for experiment #3
 ![Alt text](/docs/imgs/food3_v3_effB0.png?raw=true "EfficientNetB0 - Food-101 (3 classes)")
