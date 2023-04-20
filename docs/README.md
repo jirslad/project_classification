@@ -9,11 +9,17 @@ pip install matplotlib torchmetrics torchinfo mlxtend
 ```
 
 ## Curently supported datasets
-Food-101: multi-class single-label classification
+Food-101:
 
-DTD: multi-class single-label classification
+* single-label classification
 
-     multi-class multi-label classification (not finished yet)
+* subset of classes
+
+DTD:
+
+* single-label classification
+
+* multi-label classification (WIP)
 
 ## Usage
 
@@ -50,7 +56,7 @@ Test set contains in total 45 images of pizza, steak and sushi from Google Image
 | 1     | EfficientNetB0   | Food-101 (3 classes)  | 10     | 5e-4 | 0.052    | 0.992   | 0.956    |
 | 2     | ViT16            | Food-101 (3 classes)  | 5      | 2e-5 | 0.042    | 0.990   | 0.956    |
 | 3     | EfficientNetB0   | Food-101              | 10     | 3e-4 | 0.508    | 0.864   | 0.867    |
-| 4     | ViT16            | Food-101              | 6      | 5e-5 | 0.511    | 0.857   | 0.???    |
+| 4     | ViT16            | Food-101              | 5      | 6e-5 | 0.517    | 0.857   | 0.844    |
 
 ### Example Colab notebook for experiment #3
 TODO: add a new notebook to GitHub and change URL here. Copy individual cells into the new notebook, so that no history is present.
