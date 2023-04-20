@@ -1,5 +1,5 @@
 # Image Classification with PyTorch
-Personal repository designed to experiment with PyTorch models on image classification tasks. The purpose of its creation was to practice knowledge from [Daniel's PyTorch course](https://www.learnpytorch.io/).
+Personal repository designed to experiment with PyTorch models on image classification tasks. The purpose of its creation was to practice knowledge gained from [Daniel's PyTorch course](https://www.learnpytorch.io/).
 
 ## Setup
 Minimal requirements for a fresh Miniconda environment with python>=3.8:
@@ -29,11 +29,11 @@ Script train.py and scripts under /utils can be modified to support more models,
 
 Example usage:
 ```
-python train.py --data-path datasets/pizza_steak_sushi/all
-                --split-ratio 0.6 0.2 0.2
+python train.py --data-path datasets/food-101
+                --split-ratio 0.4 0.4
                 --model efficientnetB0 --freeze
-                --batch 32 --epochs 20 --lr 1e-4
-                --checkpoint --summary --track --plot
+                --batch 32 --epochs 10 --lr 3e-4
+                --checkpoint-path models --summary --track --plot
 ```
 
 ### Inference
@@ -59,7 +59,6 @@ Test set contains in total 45 images of pizza, steak and sushi from Google Image
 | 4     | ViT16            | Food-101              | 5      | 6e-5 | 0.517    | 0.857   | 0.844    |
 
 ### Example Colab notebook for experiment #3
-TODO: add a new notebook to GitHub and change URL here. Copy individual cells into the new notebook, so that no history is present.
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jirslad/project_classification/blob/main/training_notebook.ipynb)
 
 ### Test results for experiment #3
